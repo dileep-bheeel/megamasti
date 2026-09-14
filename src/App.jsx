@@ -1,117 +1,113 @@
 import { useEffect, useMemo, useState } from "react";
-import { Bell, Flame, Heart, Home, Menu, MessageCircle, MoreHorizontal, Plus, Search, Send, ShieldCheck, Sparkles, X } from "lucide-react";
-import { categories, seedPosts } from "./data/seed";
-import { isSupabaseReady, supabase } from "./lib/supabase";
+import { Accessibility, ArrowRight, Brain, ChevronRight, Gamepad2, Menu, Search, Sparkles, Star, Trophy, Users, X, Zap } from "lucide-react";
+import { BrowserRouter, Link, NavLink, Route, Routes, useParams } from "react-router-dom";
+import { featuredIds, gameCategories, games, getGame } from "./data/games";
+import GameEngine from "./games/GameEngine";
 
-const maxLength = 600;
-
-function Brand() {
-  return <a className="brand" href="/" aria-label="MegaMasti No Filter home"><span className="brand-mark">N<span>F</span></span><span className="brand-copy">NO FILTER<small>by MegaMasti</small></span></a>;
+function Logo() {
+  return <Link to="/" className="logo"><span className="logo-symbol">M</span><span>MEGA<strong>MASTI</strong><small>PLAY • LEARN • CREATE</small></span></Link>;
 }
 
-function Composer({ open, onClose, onPublish }) {
-  const [text, setText] = useState("");
-  const [category, setCategory] = useState("Life");
-  const [agree, setAgree] = useState(false);
-  const submit = (event) => {
-    event.preventDefault();
-    const clean = text.trim();
-    if (clean.length < 10 || !agree) return;
-    onPublish({ text: clean, category });
-    setText(""); setAgree(false); onClose();
-  };
-  if (!open) return null;
-  return <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-    <section className="composer" role="dialog" aria-modal="true" aria-labelledby="composer-title">
-      <button className="icon-button close" onClick={onClose} aria-label="Close"><X size={20}/></button>
-      <div className="eyebrow"><Sparkles size={15}/> Anonymous by design</div>
-      <h2 id="composer-title">Say what’s on your mind.</h2>
-      <p>No names. No performance. Just be honest—and kind.</p>
-      <form onSubmit={submit}>
-        <textarea autoFocus value={text} maxLength={maxLength} onChange={(e)=>setText(e.target.value)} placeholder="Write your thought, question, or confession…" aria-label="Your anonymous post"/>
-        <div className="composer-meta"><select value={category} onChange={(e)=>setCategory(e.target.value)} aria-label="Category">{categories.slice(2).map(c=><option key={c}>{c}</option>)}</select><span>{text.length}/{maxLength}</span></div>
-        <label className="promise"><input type="checkbox" checked={agree} onChange={e=>setAgree(e.target.checked)}/><span>I’ll keep this respectful and protect people’s privacy.</span></label>
-        <button className="primary wide" disabled={text.trim().length < 10 || !agree}><Send size={17}/> Post anonymously</button>
-      </form>
+function Header({ onAccessibility }) {
+  const [open,setOpen] = useState(false);
+  return <header className="site-header"><Logo />
+    <nav className={open ? "open" : ""}>
+      <NavLink to="/" onClick={() => setOpen(false)}>Discover</NavLink>
+      <NavLink to="/games" onClick={() => setOpen(false)}>All Games</NavLink>
+      <a href="/#how" onClick={() => setOpen(false)}>How it works</a>
+      <button className="mobile-close" onClick={() => setOpen(false)}><X /></button>
+    </nav>
+    <div className="header-tools"><button className="access-button" onClick={onAccessibility}><Accessibility size={18} /> Accessibility</button><Link className="play-button" to="/games">Start playing <ArrowRight size={17} /></Link><button className="menu-button" onClick={() => setOpen(true)}><Menu /></button></div>
+  </header>;
+}
+
+function GameCard({ game, featured = false }) {
+  return <Link to={"/play/" + game.id} className={"game-card " + (featured ? "featured-game" : "")} style={{"--accent":game.accent}}>
+    <div className="game-card-top"><span>{game.category}</span><b>{game.ages}</b></div>
+    <div className="game-glyph">{game.title.split(" ").map(word => word[0]).slice(0,2).join("")}</div>
+    <h3>{game.title}</h3><p>{game.description}</p>
+    <div className="skill-row">{game.skills.map(skill => <span key={skill}>{skill}</span>)}</div>
+    <div className="game-card-foot"><span>{game.level}</span><b>Play now <ChevronRight size={16} /></b></div>
+  </Link>;
+}
+
+function Home() {
+  const featured = featuredIds.map(getGame);
+  return <main>
+    <section className="home-hero">
+      <div className="hero-grid"/>
+      <div className="hero-copy"><div className="edition"><Sparkles size={15} /> The new home of intelligent play</div>
+        <h1>Play deeper.<br /><em>Think brighter.</em></h1>
+        <p>Thirty beautifully crafted games for curious minds, creative families and competitive friends—across every generation.</p>
+        <div className="hero-actions"><Link to="/games" className="mega-cta">Explore 30 games <ArrowRight /></Link><a href="#featured">See flagship games</a></div>
+        <div className="trust-row"><span><b>30</b> distinct games</span><span><b>5</b> skill worlds</span><span><b>6–80+</b> designed for everyone</span></div>
+      </div>
+      <div className="hero-showcase">
+        <div className="orbit orbit-one"/><div className="orbit orbit-two"/>
+        <Link to="/play/chess-academy" className="showcase-card main"><span>FLAGSHIP 01</span><div className="mini-board">{Array.from({length:16},(_,index) => <i key={index}>{[0,3,5,6,9,10,12,15].includes(index) ? "♟" : ""}</i>)}</div><h3>Chess Academy</h3><p>Learn every move. Understand every idea.</p></Link>
+        <Link to="/play/story-forge" className="showcase-card floating"><span>CREATIVITY</span><strong>Story<br />Forge</strong></Link>
+        <div className="xp-pill"><Zap /> +2,480 minds playing</div>
+      </div>
     </section>
-  </div>;
+
+    <section className="audience-strip"><p>Choose your energy</p><div><Link to="/games?for=kids">Young explorers</Link><Link to="/games?for=family">Families</Link><Link to="/games?for=friends">Friends</Link><Link to="/games?for=brain">Brain training</Link><Link to="/games?for=creative">Creative minds</Link></div></section>
+
+    <section className="featured-section" id="featured"><div className="section-heading"><div><span>CURATED STARTING POINTS</span><h2>Four worlds. Infinite ways to grow.</h2></div><Link to="/games">View every game <ArrowRight /></Link></div>
+      <div className="featured-grid">{featured.map((game,index) => <div className={"feature-wrap f" + index} key={game.id}><GameCard game={game} featured /></div>)}</div>
+    </section>
+
+    <section className="skill-worlds">
+      <div className="world-intro"><span>NOT JUST ENTERTAINMENT</span><h2>Every session leaves something behind.</h2><p>MegaMasti combines thoughtful game design with meaningful skills—without turning play into homework.</p></div>
+      <div className="world-list">
+        <div><Brain /><span><b>Sharper reasoning</b><small>Strategy, deduction and pattern intelligence</small></span><strong>01</strong></div>
+        <div><Sparkles /><span><b>Braver creativity</b><small>Stories, ideas, language and invention</small></span><strong>02</strong></div>
+        <div><Users /><span><b>Better connection</b><small>Cooperative play across generations</small></span><strong>03</strong></div>
+        <div><Trophy /><span><b>Visible progress</b><small>Levels, mastery and meaningful milestones</small></span><strong>04</strong></div>
+      </div>
+    </section>
+
+    <section className="how-section" id="how"><div><span>ONE PLATFORM • EVERY MOOD</span><h2>Your next great game is three taps away.</h2></div><ol><li><b>01</b><h3>Choose your intention</h3><p>Learn, compete, create, connect or train your brain.</p></li><li><b>02</b><h3>Set your experience</h3><p>Pick age range, difficulty and solo or group play.</p></li><li><b>03</b><h3>Enter the world</h3><p>Start with a guided round and grow at your pace.</p></li></ol></section>
+    <section className="closing-cta"><div className="glow"/><span>YOUR MOVE</span><h2>Thirty games.<br />No wasted time.</h2><p>Find the one that changes how you think.</p><Link to="/games">Enter MegaMasti <ArrowRight /></Link></section>
+  </main>;
 }
 
-function PostCard({ post, onLike }) {
-  const [liked, setLiked] = useState(false);
-  const [replying, setReplying] = useState(false);
-  const [reply, setReply] = useState("");
-  const toggle = () => { setLiked(v=>!v); if(!liked) onLike(post.id); };
-  return <article className="post-card">
-    <div className="post-top">
-      <div className="avatar">{post.category.slice(0,1)}</div>
-      <div><strong>Someone, anonymously</strong><div className="post-meta">{post.time}<span>•</span>{post.category}</div></div>
-      {post.hot && <span className="hot"><Flame size={13}/> Hot</span>}
-      <button className="more" aria-label="Post options"><MoreHorizontal/></button>
-    </div>
-    <p className="post-text">{post.text}</p>
-    <div className="mood">Feeling: <span>{post.mood || "Honest"}</span></div>
-    <div className="post-actions">
-      <button className={liked ? "liked" : ""} onClick={toggle}><Heart size={19} fill={liked ? "currentColor" : "none"}/>{post.hearts + (liked ? 1 : 0)}</button>
-      <button onClick={()=>setReplying(v=>!v)}><MessageCircle size={19}/>{post.replies} replies</button>
-      <button className="report">Report</button>
-    </div>
-    {replying && <form className="reply-box" onSubmit={e=>{e.preventDefault(); if(reply.trim()) {setReply("");setReplying(false);}}}><input value={reply} onChange={e=>setReply(e.target.value)} placeholder="Reply with care…" aria-label="Reply"/><button aria-label="Send reply"><Send size={17}/></button></form>}
-  </article>;
+function Catalogue() {
+  const [category,setCategory] = useState("All games");
+  const [query,setQuery] = useState("");
+  const filtered = useMemo(() => games.filter(game => (category === "All games" || game.category === category) && (game.title + game.description + game.skills.join(" ")).toLowerCase().includes(query.toLowerCase())),[category,query]);
+  return <main className="catalogue-page">
+    <section className="catalogue-head"><span>THE COMPLETE COLLECTION</span><h1>Thirty games.<br /><em>Five ways to grow.</em></h1><p>Every experience is designed around a real skill, a clear purpose and the joy of getting better.</p></section>
+    <section className="filters"><div className="catalogue-search"><Search /><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search games or skills…" /></div><div className="filter-tabs">{gameCategories.map(item => <button key={item} onClick={() => setCategory(item)} className={category === item ? "active" : ""}>{item}</button>)}</div></section>
+    <div className="catalogue-meta"><span>{filtered.length} experiences</span><b>Designed for ages 6–80+</b></div>
+    <section className="games-grid">{filtered.map(game => <GameCard game={game} key={game.id} />)}</section>
+  </main>;
+}
+
+function PlayPage() {
+  const {gameId} = useParams();
+  const game = getGame(gameId);
+  if (!game) return <main className="not-found"><h1>Game not found.</h1><Link to="/games">Explore all games</Link></main>;
+  return <GameEngine game={game} />;
+}
+
+function Footer() {
+ return <footer className="site-footer"><Logo /><p>Intelligent entertainment for every generation.</p><div><Link to="/games">Games</Link><a href="/#how">How it works</a><a href="mailto:hello@megamasti.com">Contact</a></div><small>© 2026 MegaMasti. Play thoughtfully.</small></footer>;
+}
+
+function Site() {
+  const [accessOpen,setAccessOpen] = useState(false);
+  const [largeText,setLargeText] = useState(false);
+  const [contrast,setContrast] = useState(false);
+  const [reducedMotion,setReducedMotion] = useState(false);
+  useEffect(() => { document.body.classList.toggle("large-text",largeText);document.body.classList.toggle("high-contrast",contrast);document.body.classList.toggle("reduced-motion",reducedMotion); },[largeText,contrast,reducedMotion]);
+  return <><Routes>
+    <Route path="/play/:gameId" element={<PlayPage />} />
+    <Route path="*" element={<div className="site-shell"><Header onAccessibility={() => setAccessOpen(true)} /><Routes><Route path="/" element={<Home />} /><Route path="/games" element={<Catalogue />} /><Route path="*" element={<Home />} /></Routes><Footer /></div>} />
+  </Routes>
+  {accessOpen && <div className="access-drawer"><button onClick={() => setAccessOpen(false)}><X /></button><span>ACCESSIBILITY</span><h2>Make MegaMasti yours.</h2><label><input type="checkbox" checked={largeText} onChange={event => setLargeText(event.target.checked)} /> Larger text</label><label><input type="checkbox" checked={contrast} onChange={event => setContrast(event.target.checked)} /> Higher contrast</label><label><input type="checkbox" checked={reducedMotion} onChange={event => setReducedMotion(event.target.checked)} /> Reduced motion</label></div>}
+  </>;
 }
 
 export default function App() {
-  const [active, setActive] = useState("For You");
-  const [query, setQuery] = useState("");
-  const [composer, setComposer] = useState(false);
-  const [posts, setPosts] = useState(seedPosts);
-  const [notice, setNotice] = useState("");
-  useEffect(()=>{ if(!notice) return; const id=setTimeout(()=>setNotice(""),2600); return()=>clearTimeout(id); },[notice]);
-  useEffect(()=>{
-    if(!isSupabaseReady) return;
-    supabase.from("posts").select("id,category,mood,content,hearts,reply_count,created_at").eq("status","published").order("created_at",{ascending:false}).limit(30)
-      .then(({data})=>{if(data?.length)setPosts(data.map(p=>({...p,text:p.content,replies:p.reply_count,time:"Recently"})));});
-  },[]);
-  const visible = useMemo(()=>posts.filter(p=>(active==="For You"||active==="Trending"&&p.hot||p.category===active)&&p.text.toLowerCase().includes(query.toLowerCase())),[posts,active,query]);
-  const publish = async (draft) => {
-    const item={id:Date.now(),...draft,mood:"Honest",time:"Just now",hearts:0,replies:0,hot:false};
-    if(isSupabaseReady){
-      const {data,error}=await supabase.from("posts").insert({content:draft.text,category:draft.category,mood:"Honest"}).select().single();
-      if(error){setNotice("Couldn’t publish. Please try again.");return;}
-      item.id=data.id;
-    }
-    setPosts(p=>[item,...p]); setActive("For You"); setNotice("Your anonymous post is live.");
-  };
-  return <div className="app-shell">
-    <header><Brand/><nav><a className="active" href="#feed"><Home size={18}/>Home</a><a href="#trending"><Flame size={18}/>Trending</a><a href="#safety"><ShieldCheck size={18}/>Safety</a></nav><div className="header-actions"><button className="icon-button" aria-label="Notifications"><Bell size={20}/></button><button className="primary" onClick={()=>setComposer(true)}><Plus size={18}/>Post anonymously</button><button className="icon-button menu" aria-label="Menu"><Menu/></button></div></header>
-    <main>
-      <aside className="left-panel">
-        <div className="manifesto"><span>THE INTERNET,<br/>WITHOUT THE MASK.</span><p>A calm corner for honest South Asian conversations.</p></div>
-        <div className="safety-note"><ShieldCheck/><div><strong>You’re protected</strong><p>We never display your identity. Be real, not reckless.</p></div></div>
-        <footer>© 2026 MegaMasti<br/><a href="#rules">Community rules</a> · <a href="#privacy">Privacy</a></footer>
-      </aside>
-      <section className="feed" id="feed">
-        <div className="hero">
-          <div className="eyebrow"><span className="live-dot"/> People are talking now</div>
-          <h1>What are you<br/><em>not</em> saying?</h1>
-          <p>Ask the awkward question. Share the hidden thought. Hear what real people actually feel.</p>
-          <button className="hero-button" onClick={()=>setComposer(true)}>Drop your filter <span>↗</span></button>
-        </div>
-        <div className="discovery">
-          <div className="search"><Search size={18}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search honest conversations…"/></div>
-          <div className="categories">{categories.map(c=><button key={c} className={active===c?"active":""} onClick={()=>setActive(c)}>{c}</button>)}</div>
-        </div>
-        <div className="feed-heading"><div><h2>{active}</h2><span>{visible.length} conversations</span></div><button>Fresh first⌄</button></div>
-        <div className="posts">{visible.map(post=><PostCard key={post.id} post={post} onLike={()=>{}}/>)}{!visible.length&&<div className="empty">No conversations found. Start the first one.</div>}</div>
-      </section>
-      <aside className="right-panel">
-        <section className="pulse"><div className="eyebrow"><span className="live-dot"/> Community pulse</div><div className="pulse-number">2,481</div><p>people speaking freely today</p><div className="bars">{[42,68,51,82,62,91,75,95,78,100].map((h,i)=><i key={i} style={{height:h+"%"}}/>)}</div></section>
-        <section className="prompt-card"><span>QUESTION OF THE DAY</span><h3>What truth did you learn a little too late?</h3><button onClick={()=>setComposer(true)}>Answer anonymously</button></section>
-        <section className="rules" id="safety"><h3><ShieldCheck size={18}/> Keep it human</h3><p>No hate. No harassment. No personal information. If someone may be in immediate danger, contact local emergency support.</p></section>
-      </aside>
-    </main>
-    <button className="mobile-compose" onClick={()=>setComposer(true)}><Plus/>Post anonymously</button>
-    <Composer open={composer} onClose={()=>setComposer(false)} onPublish={publish}/>
-    {notice&&<div className="toast">{notice}</div>}
-  </div>;
+ return <BrowserRouter><Site /></BrowserRouter>;
 }
