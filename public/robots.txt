@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://megamasti.com/sitemap.xml
