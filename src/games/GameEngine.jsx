@@ -13,6 +13,6 @@ export default function GameEngine({ game }) {
   if (["story","debate","caption","invent","mystery"].includes(key)) return <CreativeStudio game={game} type={key} />;
   if (["charades","forbidden","mission","feud"].includes(key)) return <SocialRound game={game} type={key} />;
   if (key === "rhythm") return <RhythmLab game={game} />;
-  if (key.startsWith("quiz")) return <KnowledgeGame game={game} bankKey={key} />;
+  if (key.startsWith("quiz") || key === "science") return <KnowledgeGame game={game} bankKey={key} />;
   return <UniversalChallenge game={game} />;
 }
