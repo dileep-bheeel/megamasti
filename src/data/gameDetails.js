@@ -1,6 +1,6 @@
 export const playableIds = [
   "chess-academy","mastermind","sudoku-journey","detective-files",
-  "world-explorer","south-asia-quest","history-detective","nature-intelligence","knowledge-ladder",
+  "world-explorer","south-asia-quest","science-lab","history-detective","nature-intelligence","knowledge-ladder",
   "story-forge","debate-arena","caption-championship","impossible-inventions","mystery-writer",
   "charades-pro","forbidden-word","secret-mission","family-feud","rhythm-lab"
 ];
@@ -12,6 +12,7 @@ const details = {
   "detective-files":{duration:"5–10 min",players:"Solo or group",goal:"Identify the conclusion best supported by the available evidence.",controls:"Read every clue, then select the strongest answer.",scoring:"Evidence-based conclusions earn XP.",tip:"Separate contradictions from details that are merely suspicious."},
   "world-explorer":{duration:"3–6 min",players:"Solo",goal:"Answer geography and culture questions accurately.",controls:"Choose one answer and read the explanation.",scoring:"Correct answers earn 40 XP.",tip:"Use geographic relationships, not isolated memorization."},
   "south-asia-quest":{duration:"3–6 min",players:"Solo or family",goal:"Explore South Asian history, culture, languages and environments.",controls:"Choose one answer and review the context.",scoring:"Correct answers earn 40 XP.",tip:"Look for connections between geography and culture."},
+  "science-lab":{duration:"4–8 min",players:"Solo or family",goal:"Predict scientific outcomes and connect each result to its mechanism.",controls:"Choose the best prediction, then study the explanation.",scoring:"Correct predictions earn 40 XP.",tip:"Ask which variable changes and which variables stay controlled."},
   "history-detective":{duration:"3–6 min",players:"Solo",goal:"Interpret historical evidence and reconstruct reliable conclusions.",controls:"Choose the best-supported answer.",scoring:"Correct reasoning earns 40 XP.",tip:"Ask when, why and by whom each source was created."},
   "nature-intelligence":{duration:"3–6 min",players:"Solo or family",goal:"Understand ecosystems and the relationships that sustain them.",controls:"Choose an answer and study the explanation.",scoring:"Correct answers earn 40 XP.",tip:"Think in systems: one change can affect many species."},
   "knowledge-ladder":{duration:"3–8 min",players:"Solo",goal:"Climb a mixed knowledge ladder without breaking your run.",controls:"Choose one answer per level.",scoring:"Each correct answer adds 40 XP.",tip:"Eliminate implausible options before committing."},
