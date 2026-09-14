@@ -1,10 +1,11 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Accessibility, ArrowRight, Brain, ChevronRight, Gamepad2, Heart, Menu, Search, Sparkles, Trophy, Users, X, Zap } from "lucide-react";
-import { BrowserRouter, Link, NavLink, Outlet, Route, Routes, useNavigate, useParams } from "react-router-dom";
+import { BrowserRouter, Link, NavLink, Outlet, Route, Routes, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { featuredIds, gameCategories, games, getGame } from "./data/games";
 import { isPlayable, withDetails } from "./data/gameDetails";
 import { useProgress } from "./context/ProgressContext";
 import usePageMeta from "./hooks/usePageMeta";
+import GameArtwork from "./components/GameArtwork";
 
 const GameEngine = lazy(() => import("./games/GameEngine"));
 const playableGames = games.filter(game => isPlayable(game.id)).map(withDetails);
@@ -17,26 +18,27 @@ function Header({ onAccessibility }) {
   const [open,setOpen] = useState(false);
   return <header className="site-header"><Logo />
     <nav className={open ? "open" : ""} aria-label="Primary navigation">
-      <NavLink to="/" onClick={() => setOpen(false)}>Discover</NavLink>
+      <NavLink end to="/" onClick={() => setOpen(false)}>Home</NavLink>
       <NavLink to="/games" onClick={() => setOpen(false)}>Games</NavLink>
-      <a href="/#how" onClick={() => setOpen(false)}>How it works</a>
+      <a href="/#categories" onClick={() => setOpen(false)}>Categories</a>
+      <a href="/#daily" onClick={() => setOpen(false)}>Daily pick</a>
       <button className="mobile-close" onClick={() => setOpen(false)} aria-label="Close menu"><X /></button>
     </nav>
     <div className="header-tools"><button className="access-button" onClick={onAccessibility}><Accessibility size={18} /> Accessibility</button><Link className="play-button" to="/games">Start playing <ArrowRight size={17} /></Link><button className="menu-button" onClick={() => setOpen(true)} aria-label="Open menu"><Menu /></button></div>
   </header>;
 }
 
-function GameCard({ game, featured = false }) {
+function GameCard({ game, featured = false, label }) {
   const {progress,toggleFavorite} = useProgress();
   const favorite = progress.favorites.includes(game.id);
-  return <article className={"game-card " + (featured ? "featured-game" : "")} style={{"--accent":game.accent}}>
-    <div className="game-card-top"><span>{game.category}</span><b>{game.ages}</b></div>
+  return <article className={"game-card card-" + game.category.toLowerCase() + (featured ? " featured-game" : "")} style={{"--accent":game.accent}}>
+    <div className="game-card-top"><span>{label || game.category}</span><b>{game.ages}</b></div>
     <button className={"favorite-button " + (favorite ? "active" : "")} onClick={() => toggleFavorite(game.id)} aria-label={(favorite ? "Remove " : "Add ") + game.title + (favorite ? " from" : " to") + " favorites"}><Heart fill={favorite ? "currentColor" : "none"} /></button>
-    <Link to={"/play/" + game.id} className="game-card-link">
-      <div className="game-glyph">{game.title.split(" ").map(word => word[0]).slice(0,2).join("")}</div>
-      <h3>{game.title}</h3><p>{game.description}</p>
+    <Link to={"/play/" + game.id} className="game-card-link" aria-label={"Play " + game.title}>
+      <GameArtwork game={game} />
+      <div className="game-copy"><div className="game-title-row"><h3>{game.title}</h3><span>{game.level}</span></div><p>{game.description}</p></div>
       <div className="skill-row">{game.skills.map(skill => <span key={skill}>{skill}</span>)}</div>
-      <div className="game-card-foot"><span>{game.duration} • {game.players}</span><b>Play <ChevronRight size={16} /></b></div>
+      <div className="game-card-foot"><span>{game.duration}<i />{game.players}</span><b>Open game <ChevronRight size={16} /></b></div>
     </Link>
   </article>;
 }
@@ -47,6 +49,23 @@ function useDailyGame() {
     const key = Number(String(date.getUTCFullYear()) + String(date.getUTCMonth() + 1).padStart(2,"0") + String(date.getUTCDate()).padStart(2,"0"));
     return playableGames[key % playableGames.length];
   },[]);
+}
+
+const categoryWorlds = [
+  {name:"Strategy",number:"01",note:"Plan ahead. Read the board.",icon:"♞"},
+  {name:"Logic",number:"02",note:"Notice patterns. Find the proof.",icon:"◇"},
+  {name:"Knowledge",number:"03",note:"Explore the world one answer at a time.",icon:"◎"},
+  {name:"Creativity",number:"04",note:"Write, invent and surprise yourself.",icon:"✦"},
+  {name:"Social",number:"05",note:"Bring everyone into the game.",icon:"◌"}
+];
+
+function CategoryShowcase() {
+  return <section className="category-showcase" id="categories">
+    <div className="section-heading"><div><span>FIVE WAYS TO PLAY</span><h2>Follow your curiosity.</h2></div><p>Pick a world now. Change your mind whenever you like.</p></div>
+    <div className="category-rail">{categoryWorlds.map(world => <Link key={world.name} to={"/games?category=" + world.name} className={"category-tile category-" + world.name.toLowerCase()}>
+      <div><small>{world.number}</small><i>{world.icon}</i></div><h3>{world.name}</h3><p>{world.note}</p><span>{playableGames.filter(game => game.category === world.name).length} games <ArrowRight /></span>
+    </Link>)}</div>
+  </section>;
 }
 
 function Home() {
@@ -65,25 +84,27 @@ function Home() {
   return <main>
     <section className="home-hero">
       <div className="hero-grid" />
-      <div className="hero-copy"><div className="edition"><Sparkles size={15} /> Thoughtful play for every generation</div>
-        <h1>Play deeper.<br /><em>Think brighter.</em></h1>
-        <p>Premium games for strategy, knowledge, creativity and memorable time together—designed to be understood quickly and replayed often.</p>
-        <div className="hero-actions"><button onClick={quickPlay} className="mega-cta">Quick play <Zap /></button><Link to="/games">Browse all playable games</Link></div>
-        <div className="trust-row"><span><b>{playableGames.length}</b> playable experiences</span><span><b>5</b> skill worlds</span><span><b>6–80+</b> designed for everyone</span></div>
+      <div className="hero-copy"><div className="edition"><Sparkles size={15} /> Games for curious minds, ages 6–80+</div>
+        <h1>A world of play.<br /><em>Made for every mind.</em></h1>
+        <p>Strategy, stories, puzzles, knowledge and group fun—twenty thoughtful games, ready whenever you are.</p>
+        <div className="hero-actions"><button onClick={quickPlay} className="mega-cta">Start playing <Zap /></button><Link to="/games">Explore the collection <ArrowRight /></Link></div>
+        <div className="trust-row"><span><b>{playableGames.length}</b> games ready now</span><span><b>5</b> distinct worlds</span><span><b>0</b> sign-up steps</span></div>
       </div>
-      <div className="hero-showcase">
-        <div className="orbit orbit-one" /><div className="orbit orbit-two" />
-        <Link to="/play/chess-academy" className="showcase-card main"><span>EDITOR’S PICK</span><div className="mini-board">{Array.from({length:16},(_,index) => <i key={index}>{[0,3,5,6,9,10,12,15].includes(index) ? "♟" : ""}</i>)}</div><h3>Chess Academy</h3><p>Learn every move. Understand every idea.</p></Link>
-        <Link to="/play/story-forge" className="showcase-card floating"><span>CREATIVITY</span><strong>Story<br />Forge</strong></Link>
-        <div className="xp-pill"><Gamepad2 /> No sign-up. No pressure.</div>
+      <div className="hero-showcase" aria-label="Featured MegaMasti games">
+        <div className="showcase-caption"><span>THE PLAY TABLE</span><b>Choose a card. Begin anywhere.</b></div>
+        <Link to="/play/chess-academy" className="showcase-card main"><GameArtwork game={playableGames.find(game => game.id === "chess-academy")} compact /><div><span>EDITOR’S PICK</span><h3>Chess Academy</h3><p>Learn every move. Understand every idea.</p></div></Link>
+        <Link to="/play/story-forge" className="showcase-card floating"><GameArtwork game={playableGames.find(game => game.id === "story-forge")} compact /><span>CREATIVE PLAY</span><strong>Make the story only you could tell.</strong></Link>
+        <div className="xp-pill"><Gamepad2 /> Play first. No account needed.</div>
       </div>
     </section>
 
-    <section className="audience-strip"><p>Choose your energy</p><div><Link to="/games">Young explorers</Link><Link to="/games">Families</Link><Link to="/games">Friends</Link><Link to="/games">Brain training</Link><Link to="/games">Creative minds</Link></div></section>
+    <section className="brand-marquee" aria-label="MegaMasti game types"><span>STRATEGY</span><i>✦</i><span>PUZZLES</span><i>✦</i><span>STORIES</span><i>✦</i><span>KNOWLEDGE</span><i>✦</i><span>TOGETHER</span></section>
+
+    <CategoryShowcase />
 
     {recent.length > 0 && <section className="continue-section"><div className="section-heading"><div><span>PICK UP WHERE YOU LEFT OFF</span><h2>Continue playing.</h2></div></div><div className="compact-game-row">{recent.slice(0,4).map(game => <GameCard game={game} key={game.id} />)}</div></section>}
 
-    <section className="daily-section"><div><span>DAILY PICK</span><h2>One thoughtful game.<br />A fresh pick every day.</h2><p>Today’s selection is determined by the date—no fake popularity or pressure.</p></div><GameCard game={daily} featured /></section>
+    <section className="daily-section" id="daily"><div><span>DAILY PICK</span><h2>One thoughtful game.<br />A fresh pick every day.</h2><p>Today’s selection is determined by the date—no fake popularity or pressure.</p></div><GameCard game={daily} featured label="TODAY’S EDITORIAL PICK" /></section>
 
     <section className="featured-section" id="featured"><div className="section-heading"><div><span>CURATED STARTING POINTS</span><h2>Strong places to begin.</h2></div><Link to="/games">View playable games <ArrowRight /></Link></div>
       <div className="featured-grid">{featured.map((game,index) => <div className={"feature-wrap f" + index} key={game.id}><GameCard game={game} featured /></div>)}</div>
@@ -101,7 +122,9 @@ function Home() {
 
 function Catalogue() {
   usePageMeta({title:"Games — MegaMasti",description:"Browse MegaMasti’s production-ready strategy, logic, knowledge, creativity and social games.",path:"/games"});
-  const [category,setCategory] = useState("All games");
+  const [params] = useSearchParams();
+  const requestedCategory = params.get("category");
+  const [category,setCategory] = useState(gameCategories.includes(requestedCategory) ? requestedCategory : "All games");
   const [query,setQuery] = useState("");
   const {progress} = useProgress();
   const filtered = useMemo(() => playableGames.filter(game => (category === "All games" || game.category === category) && (game.title + game.description + game.skills.join(" ")).toLowerCase().includes(query.toLowerCase())),[category,query]);
@@ -109,7 +132,7 @@ function Catalogue() {
 
   return <main className="catalogue-page">
     <section className="catalogue-head"><span>PLAYABLE NOW</span><h1>Choose a challenge.<br /><em>Build a skill.</em></h1><p>Only complete, functional experiences appear here. More games will join the library after passing gameplay and quality review.</p></section>
-    {favorites.length > 0 && <section className="favorites-strip"><span>YOUR FAVORITES</span><div>{favorites.map(game => <Link key={game.id} to={"/play/" + game.id}>{game.title}<ChevronRight /></Link>)}</div></section>}
+    {favorites.length > 0 && <section className="favorites-strip" id="favorites"><span>YOUR FAVORITES</span><div>{favorites.map(game => <Link key={game.id} to={"/play/" + game.id}>{game.title}<ChevronRight /></Link>)}</div></section>}
     <section className="filters"><div className="catalogue-search"><Search /><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search games or skills…" aria-label="Search games" /></div><div className="filter-tabs">{gameCategories.map(item => <button key={item} onClick={() => setCategory(item)} className={category === item ? "active" : ""}>{item}</button>)}</div></section>
     <div className="catalogue-meta"><span>{filtered.length} playable experiences</span><b>Designed for ages 6–80+</b></div>
     <section className="games-grid">{filtered.map(game => <GameCard game={game} key={game.id} />)}</section>
