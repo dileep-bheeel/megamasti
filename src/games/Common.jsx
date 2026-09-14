@@ -9,7 +9,6 @@ export const shuffle = list => [...list].sort(() => Math.random() - 0.5);
 export function GameFrame({ game, children, onReset, score = 0, step = "LIVE" }) {
   const { markPlayed, recordScore, progress } = useProgress();
   const [started,setStarted] = useState(false);
-  useEffect(() => { markPlayed(game.id); },[game.id,markPlayed]);
   useEffect(() => { recordScore(game.id,score); },[game.id,recordScore,score]);
 
   return <div className="game-screen" style={{ "--game-accent": game.accent }}>
@@ -26,7 +25,7 @@ export function GameFrame({ game, children, onReset, score = 0, step = "LIVE" })
         <dl><div><dt>Goal</dt><dd>{game.goal}</dd></div><div><dt>Controls</dt><dd>{game.controls}</dd></div><div><dt>Scoring</dt><dd>{game.scoring}</dd></div></dl>
         <aside><Lightbulb /><span><b>Good to know</b>{game.tip}</span></aside>
         {progress.bestScores[game.id] && <div className="personal-best"><Trophy /> Personal best: {progress.bestScores[game.id]} XP</div>}
-        <button className="cta intro-start" onClick={() => setStarted(true)}>Start game <ChevronRight /></button>
+        <button className="cta intro-start" onClick={() => { markPlayed(game.id); setStarted(true); }}>Start game <ChevronRight /></button>
       </section> : children}
     </main>
   </div>;
