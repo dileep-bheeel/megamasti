@@ -33,6 +33,6 @@ export const games = [
   {id:"mega-tournament",title:"Mega Tournament",category:"Social",engine:"tournament",ages:"8+",level:"Group",skills:["Mixed skills","Teamwork"],accent:"#d8ff52",description:"A premium multi-round competition drawing from the whole MegaMasti universe."}
 ];
 
-export const featuredIds = ["chess-academy","detective-files","story-forge","mega-tournament"];
+export const featuredIds = ["chess-academy","detective-files","story-forge","sudoku-journey"];
 
 export const getGame = (id) => games.find(game => game.id === id);
