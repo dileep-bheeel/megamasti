@@ -1,0 +1,31 @@
+export const playableIds = [
+  "chess-academy","mastermind","sudoku-journey","detective-files",
+  "world-explorer","south-asia-quest","history-detective","nature-intelligence","knowledge-ladder",
+  "story-forge","debate-arena","caption-championship","impossible-inventions","mystery-writer",
+  "charades-pro","forbidden-word","secret-mission","family-feud","rhythm-lab"
+];
+
+const details = {
+  "chess-academy":{duration:"10–30 min",players:"Solo",goal:"Develop your pieces, protect your king and win by checkmate.",controls:"Tap a white piece, then tap a highlighted legal destination.",scoring:"Earn XP for legal moves and completed learning principles.",tip:"Before moving, scan checks, captures and threats."},
+  mastermind:{duration:"4–8 min",players:"Solo",goal:"Deduce the hidden four-colour sequence within eight attempts.",controls:"Choose four colours and select Test code.",scoring:"Fewer attempts produce a stronger result.",tip:"Use each clue to eliminate possibilities systematically."},
+  "sudoku-journey":{duration:"8–20 min",players:"Solo",goal:"Fill every cell so each row, column and 3×3 box contains 1–9 once.",controls:"Select an empty cell, then choose a number.",scoring:"Complete the grid while minimizing mistakes.",tip:"Start with units that already contain the most digits."},
+  "detective-files":{duration:"5–10 min",players:"Solo or group",goal:"Identify the conclusion best supported by the available evidence.",controls:"Read every clue, then select the strongest answer.",scoring:"Evidence-based conclusions earn XP.",tip:"Separate contradictions from details that are merely suspicious."},
+  "world-explorer":{duration:"3–6 min",players:"Solo",goal:"Answer geography and culture questions accurately.",controls:"Choose one answer and read the explanation.",scoring:"Correct answers earn 40 XP.",tip:"Use geographic relationships, not isolated memorization."},
+  "south-asia-quest":{duration:"3–6 min",players:"Solo or family",goal:"Explore South Asian history, culture, languages and environments.",controls:"Choose one answer and review the context.",scoring:"Correct answers earn 40 XP.",tip:"Look for connections between geography and culture."},
+  "history-detective":{duration:"3–6 min",players:"Solo",goal:"Interpret historical evidence and reconstruct reliable conclusions.",controls:"Choose the best-supported answer.",scoring:"Correct reasoning earns 40 XP.",tip:"Ask when, why and by whom each source was created."},
+  "nature-intelligence":{duration:"3–6 min",players:"Solo or family",goal:"Understand ecosystems and the relationships that sustain them.",controls:"Choose an answer and study the explanation.",scoring:"Correct answers earn 40 XP.",tip:"Think in systems: one change can affect many species."},
+  "knowledge-ladder":{duration:"3–8 min",players:"Solo",goal:"Climb a mixed knowledge ladder without breaking your run.",controls:"Choose one answer per level.",scoring:"Each correct answer adds 40 XP.",tip:"Eliminate implausible options before committing."},
+  "story-forge":{duration:"8–20 min",players:"Solo or group",goal:"Build an original story from a character, world, conflict and twist.",controls:"Write at least forty thoughtful characters, then complete the creation.",scoring:"Completion and meaningful development earn XP.",tip:"Let the final choice change how the opening is understood."},
+  "debate-arena":{duration:"6–12 min",players:"Solo or teams",goal:"Build a fair argument for an assigned position.",controls:"Write a claim, evidence, counterargument and conclusion.",scoring:"Structured completion earns XP.",tip:"Answer the strongest opposing argument, not the weakest."},
+  "caption-championship":{duration:"3–8 min",players:"Group",goal:"Write a surprising, kind and specific caption.",controls:"Draft a caption and complete the round.",scoring:"Creative completion earns XP; groups may vote aloud.",tip:"Specific observations are funnier than generic punchlines."},
+  "impossible-inventions":{duration:"7–15 min",players:"Solo or teams",goal:"Combine unlikely objects into a useful, explainable invention.",controls:"Describe the mechanism, user and benefit.",scoring:"Complete ideas earn XP.",tip:"Add one real constraint to make the idea more inventive."},
+  "mystery-writer":{duration:"10–25 min",players:"Solo",goal:"Create a solvable mystery with fair clues and a meaningful reveal.",controls:"Write the crime, clues, distraction, motive and solution.",scoring:"A complete fair-play structure earns XP.",tip:"The reader should be surprised, but able to trace the answer backward."},
+  "charades-pro":{duration:"5–20 min",players:"3+ players",goal:"Help your team identify the prompt without speaking.",controls:"Reveal privately, pass the device and act before time expires.",scoring:"Groups award the round when the prompt is guessed.",tip:"Break complex ideas into actions, setting and emotion."},
+  "forbidden-word":{duration:"5–15 min",players:"3+ players",goal:"Explain the secret concept without saying any forbidden words.",controls:"Reveal privately and describe it before time expires.",scoring:"A successful guess wins the round.",tip:"Move from category to function to a concrete example."},
+  "secret-mission":{duration:"10–25 min",players:"3+ players",goal:"Complete a subtle social objective without being identified.",controls:"Read privately, hide the screen and act naturally.",scoring:"Success requires both completion and remaining undiscovered.",tip:"Patience is more convincing than forcing an opportunity."},
+  "family-feud":{duration:"10–25 min",players:"2 teams",goal:"Predict the most common answers to relatable questions.",controls:"Teams alternate spoken guesses, then reveal the answer board.",scoring:"Points match the displayed survey values.",tip:"Think about what most people would say, not your personal favourite."},
+  "rhythm-lab":{duration:"3–8 min",players:"Solo or group",goal:"Reproduce an increasingly long audio-visual sequence.",controls:"Play the sequence, then tap the pads in the same order.",scoring:"Every completed level increases XP.",tip:"Chunk long patterns into smaller rhythmic phrases."}
+};
+
+export const isPlayable = id => playableIds.includes(id);
+export const withDetails = game => ({...game,...details[game.id],playable:isPlayable(game.id)});
