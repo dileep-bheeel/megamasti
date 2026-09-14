@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Clock3, Lightbulb, Volume2 } from "lucide-react";
 import { prompts } from "../data/content";
 import { Completion, GameFrame } from "./Common";
+import { useProgress } from "../context/ProgressContext";
 
 export function CreativeStudio({ game, type }) {
   const [round,setRound] = useState(0);
@@ -65,28 +66,55 @@ export function SocialRound({ game, type }) {
   return <GameFrame game={game} score={revealed ? 80 : 0} step={revealed ? seconds + "s" : "PASS DEVICE"} onReset={reset}>
     <section className="social-stage"><span className="panel-label">GROUP ROUND</span><h1>{title}</h1><p>{detail}</p>
       <button className={"reveal-card " + (revealed ? "open" : "")} onClick={() => setRevealed(true)}>{revealed ? <strong>{hidden}</strong> : <><span>Private card</span><strong>Tap when only you can see</strong></>}</button>
-      {revealed && <div className="timer-line"><Clock3 /><i style={{width:(seconds / 60 * 100) + "%"}} /></div>}
+      {revealed && <><div className="timer-line"><Clock3 /><i style={{width:(seconds / 60 * 100) + "%"}} /></div>{seconds === 0 && <p className="time-up" aria-live="polite">Time is up—complete the round when your group is ready.</p>}</>}
       <button className="cta" onClick={reset}>{revealed ? "Complete round" : "Skip card"} →</button>
     </section>
   </GameFrame>;
 }
 
 export function RhythmLab({ game }) {
+  const {progress} = useProgress();
+  const timeouts = useRef([]);
   const pads = ["#d8ff52","#8a7dff","#ff718e","#5edfd5"];
   const [sequence,setSequence] = useState([0,2,1]);
   const [input,setInput] = useState([]);
   const [flash,setFlash] = useState(null);
   const [status,setStatus] = useState("Listen, then repeat the sequence.");
+  useEffect(() => () => timeouts.current.forEach(clearTimeout),[]);
+  const tone = index => {
+    if (!progress.preferences.sound) return;
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      const context = new AudioContext();
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      oscillator.frequency.value = [261.63,329.63,392,523.25][index];
+      gain.gain.setValueAtTime(0.09,context.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001,context.currentTime + 0.22);
+      oscillator.connect(gain); gain.connect(context.destination);
+      oscillator.start(); oscillator.stop(context.currentTime + 0.23);
+      oscillator.onended = () => context.close();
+    } catch { /* Audio is optional. Visual feedback remains available. */ }
+  };
   const play = () => {
+    timeouts.current.forEach(clearTimeout);
+    timeouts.current = [];
     setInput([]);
-    sequence.forEach((pad,index) => setTimeout(() => { setFlash(pad); setTimeout(() => setFlash(null),260); },index * 430));
+    sequence.forEach((pad,index) => {
+      const timer = setTimeout(() => {
+        setFlash(pad); tone(pad);
+        timeouts.current.push(setTimeout(() => setFlash(null),260));
+      },index * 430);
+      timeouts.current.push(timer);
+    });
   };
   const hit = index => {
+    tone(index);
     const next = [...input,index]; setInput(next);
     if (index !== sequence[next.length - 1]) { setStatus("Pattern broken. Reset your attention and try again."); setInput([]); }
     else if (next.length === sequence.length) { setStatus("Perfect rhythm. A new beat has been added."); setSequence(value => [...value,Math.floor(Math.random()*4)]); setInput([]); }
   };
-  const reset = () => { setSequence([0,2,1]); setInput([]); setStatus("Listen, then repeat the sequence."); };
+  const reset = () => { timeouts.current.forEach(clearTimeout); setSequence([0,2,1]); setInput([]); setFlash(null); setStatus("Listen, then repeat the sequence."); };
   return <GameFrame game={game} score={(sequence.length - 3) * 50} step={"LEVEL " + (sequence.length - 2)} onReset={reset}>
     <section className="rhythm-stage"><div className="challenge-kicker"><Volume2 /> Audio-visual memory</div><h1>Hear the pattern.<br />Become the pattern.</h1><p>{status}</p>
       <div className="rhythm-pads">{pads.map((color,index) => <button key={color} onClick={() => hit(index)} className={flash === index ? "flash" : ""} style={{"--pad":color}}><span>{index + 1}</span></button>)}</div>
