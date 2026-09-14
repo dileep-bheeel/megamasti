@@ -1,0 +1,38 @@
+export const gameCategories = ["All games","Strategy","Logic","Knowledge","Creativity","Social"];
+
+export const games = [
+  {id:"chess-academy",title:"Chess Academy",category:"Strategy",engine:"chess",ages:"8+",level:"Adaptive",skills:["Strategy","Focus"],accent:"#d8ff52",description:"Learn visually, practise tactical ideas, and play complete guided matches."},
+  {id:"checkmate-rush",title:"Checkmate Rush",category:"Strategy",engine:"chessPuzzle",ages:"10+",level:"Challenging",skills:["Tactics","Pattern recognition"],accent:"#ff8d66",description:"Find decisive chess moves before the position disappears."},
+  {id:"reversi-arena",title:"Reversi Arena",category:"Strategy",engine:"reversi",ages:"8+",level:"Adaptive",skills:["Planning","Logic"],accent:"#72e6c1",description:"Outflank your rival and control the board in a polished strategy duel."},
+  {id:"mancala-masters",title:"Mancala Masters",category:"Strategy",engine:"mancala",ages:"7+",level:"Medium",skills:["Planning","Counting"],accent:"#f3ba63",description:"Capture stones through elegant chains of calculated moves."},
+  {id:"territory",title:"Territory",category:"Strategy",engine:"territory",ages:"9+",level:"Challenging",skills:["Spatial thinking","Planning"],accent:"#6ea8ff",description:"An original grid-control battle where every placement reshapes the board."},
+  {id:"mastermind",title:"Mastermind Codebreaker",category:"Logic",engine:"mastermind",ages:"8+",level:"Adaptive",skills:["Deduction","Logic"],accent:"#c69cff",description:"Break sophisticated colour codes with precise deductive reasoning."},
+  {id:"sudoku-journey",title:"Sudoku Journey",category:"Logic",engine:"sudoku",ages:"9+",level:"Adaptive",skills:["Logic","Concentration"],accent:"#7bdff2",description:"A calm, guided path from first techniques to expert grids."},
+  {id:"nonogram-studio",title:"Nonogram Studio",category:"Logic",engine:"nonogram",ages:"8+",level:"Medium",skills:["Visual logic","Patience"],accent:"#ff85a2",description:"Use row and column clues to reveal handcrafted pixel artwork."},
+  {id:"kakuro-vault",title:"Kakuro Vault",category:"Logic",engine:"kakuro",ages:"12+",level:"Challenging",skills:["Number logic","Deduction"],accent:"#f9d56e",description:"Unlock number-crossword chambers through intersecting sums."},
+  {id:"circuit-architect",title:"Circuit Architect",category:"Logic",engine:"circuit",ages:"10+",level:"Progressive",skills:["Systems thinking","Science"],accent:"#83f28f",description:"Rotate and connect components to bring intricate machines to life."},
+  {id:"detective-files",title:"Detective Files",category:"Logic",engine:"detective",ages:"12+",level:"Challenging",skills:["Observation","Reasoning"],accent:"#ff7b72",description:"Investigate evidence, test alibis, and expose contradictions."},
+  {id:"escape-room",title:"Escape Room Stories",category:"Logic",engine:"escape",ages:"10+",level:"Challenging",skills:["Problem-solving","Teamwork"],accent:"#ad91ff",description:"Solve interconnected puzzles inside atmospheric branching mysteries."},
+  {id:"world-explorer",title:"World Explorer",category:"Knowledge",engine:"quizWorld",ages:"8+",level:"Adaptive",skills:["Geography","Culture"],accent:"#62d9ff",description:"Travel through maps, landmarks, languages, and surprising cultures."},
+  {id:"south-asia-quest",title:"South Asia Quest",category:"Knowledge",engine:"quizSouthAsia",ages:"9+",level:"Adaptive",skills:["History","Culture"],accent:"#ffb86b",description:"Explore the region’s people, places, discoveries, and living traditions."},
+  {id:"science-lab",title:"Science Lab",category:"Knowledge",engine:"science",ages:"9+",level:"Progressive",skills:["Prediction","Scientific thinking"],accent:"#75f0ba",description:"Predict outcomes, run virtual experiments, and understand why they happen."},
+  {id:"history-detective",title:"History Detective",category:"Knowledge",engine:"quizHistory",ages:"11+",level:"Challenging",skills:["History","Reasoning"],accent:"#e7c27d",description:"Reconstruct timelines and distinguish evidence from assumption."},
+  {id:"nature-intelligence",title:"Nature Intelligence",category:"Knowledge",engine:"quizNature",ages:"7+",level:"Adaptive",skills:["Ecology","Systems thinking"],accent:"#9be15d",description:"Balance ecosystems and learn how living systems depend on one another."},
+  {id:"knowledge-ladder",title:"Knowledge Ladder",category:"Knowledge",engine:"quizGeneral",ages:"10+",level:"Adaptive",skills:["General knowledge","Recall"],accent:"#f7d154",description:"Climb through increasingly demanding questions without losing your streak."},
+  {id:"story-forge",title:"Story Forge",category:"Creativity",engine:"story",ages:"8+",level:"Open-ended",skills:["Writing","Imagination"],accent:"#ff75b5",description:"Shape characters, conflicts, and twists into an original story world."},
+  {id:"word-architect",title:"Word Architect",category:"Creativity",engine:"words",ages:"9+",level:"Adaptive",skills:["Vocabulary","Creativity"],accent:"#8ab4ff",description:"Construct high-value words from a shifting set of letters."},
+  {id:"debate-arena",title:"Debate Arena",category:"Creativity",engine:"debate",ages:"13+",level:"Challenging",skills:["Communication","Critical thinking"],accent:"#fa8c7c",description:"Build a structured argument for a viewpoint you may not expect."},
+  {id:"caption-championship",title:"Caption Championship",category:"Creativity",engine:"caption",ages:"10+",level:"Social",skills:["Humour","Writing"],accent:"#cda1ff",description:"Turn unusual scenes into sharp captions and vote for the best."},
+  {id:"impossible-inventions",title:"Impossible Inventions",category:"Creativity",engine:"invent",ages:"8+",level:"Open-ended",skills:["Design thinking","Creativity"],accent:"#69e4d5",description:"Combine unlikely objects to solve imaginative real-world problems."},
+  {id:"mystery-writer",title:"Mystery Writer",category:"Creativity",engine:"mystery",ages:"12+",level:"Progressive",skills:["Story structure","Reasoning"],accent:"#be9cff",description:"Create a fair-play mystery in which every clue truly matters."},
+  {id:"charades-pro",title:"Dumb Charades Pro",category:"Social",engine:"charades",ages:"7+",level:"Group",skills:["Expression","Teamwork"],accent:"#ffbc57",description:"Performance challenges with clever categories and calibrated difficulty."},
+  {id:"forbidden-word",title:"Forbidden Word",category:"Social",engine:"forbidden",ages:"9+",level:"Group",skills:["Vocabulary","Quick thinking"],accent:"#ff758f",description:"Explain nuanced ideas without using the most obvious words."},
+  {id:"secret-mission",title:"Secret Mission",category:"Social",engine:"mission",ages:"10+",level:"Group",skills:["Observation","Social play"],accent:"#88a8ff",description:"Complete subtle objectives while identifying everyone else’s mission."},
+  {id:"family-feud",title:"Family Feud: South Asia",category:"Social",engine:"feud",ages:"7+",level:"Teams",skills:["Knowledge","Teamwork"],accent:"#f5cf65",description:"Predict the most popular answers across relatable family situations."},
+  {id:"rhythm-lab",title:"Sound & Rhythm Lab",category:"Social",engine:"rhythm",ages:"6+",level:"Adaptive",skills:["Memory","Timing"],accent:"#7ce7ee",description:"Listen, remember, and reproduce evolving rhythmic sequences."},
+  {id:"mega-tournament",title:"Mega Tournament",category:"Social",engine:"tournament",ages:"8+",level:"Group",skills:["Mixed skills","Teamwork"],accent:"#d8ff52",description:"A premium multi-round competition drawing from the whole MegaMasti universe."}
+];
+
+export const featuredIds = ["chess-academy","detective-files","story-forge","mega-tournament"];
+
+export const getGame = (id) => games.find(game => game.id === id);
