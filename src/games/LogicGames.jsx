@@ -14,11 +14,11 @@ export function Sudoku({ game }) {
   const reset = () => { setGrid([...puzzle]); setSelected(null); setMistakes(0); };
   const enter = number => {
     if (selected === null || puzzle[selected]) return;
-    if (solution[selected] !== number) setMistakes(value => value + 1);
+    if (solution[selected] !== number) { setMistakes(value => value + 1); return; }
     setGrid(values => values.map((value, index) => index === selected ? number : value));
   };
 
-  if (complete) return <GameFrame game={game} score={180 - mistakes * 10} onReset={reset}><Completion title="Grid mastered." text={"Completed with " + mistakes + " mistakes. Your pattern discipline is getting stronger."} xp={180 - mistakes * 10} onAgain={reset} /></GameFrame>;
+  if (complete) { const finalScore = Math.max(40,180 - mistakes * 10); return <GameFrame game={game} score={finalScore} onReset={reset}><Completion title="Grid mastered." text={"Completed with " + mistakes + " mistakes. Your pattern discipline is getting stronger."} xp={finalScore} onAgain={reset} /></GameFrame>; }
 
   return <GameFrame game={game} score={Math.max(0, 80 - mistakes * 10)} step={mistakes + " MISTAKES"} onReset={reset}>
     <div className="sudoku-layout">
@@ -37,9 +37,10 @@ export function Mastermind({ game }) {
   const [guess, setGuess] = useState([]);
   const [rows, setRows] = useState([]);
   const [won, setWon] = useState(false);
+  const lost = rows.length >= 8 && !won;
   const reset = () => { setSecret(shuffle(colors).slice(0,4)); setGuess([]); setRows([]); setWon(false); };
   const submit = () => {
-    if (guess.length !== 4) return;
+    if (guess.length !== 4 || rows.length >= 8 || won) return;
     const exact = guess.filter((color,index) => color === secret[index]).length;
     const remaining = secret.filter((color,index) => color !== guess[index]);
     let partial = 0;
@@ -55,6 +56,7 @@ export function Mastermind({ game }) {
   };
 
   if (won) return <GameFrame game={game} score={160} onReset={reset}><Completion title="Code broken." text={"You solved the sequence in " + rows.length + " attempts."} xp={160} onAgain={reset} /></GameFrame>;
+  if (lost) return <GameFrame game={game} score={40} onReset={reset}><Completion title="The code held this time." text="The hidden sequence is now revealed. Use the evidence from each row and try a new code." xp={40} onAgain={reset} /></GameFrame>;
 
   return <GameFrame game={game} score={rows.length * 10} step={(8 - rows.length) + " ATTEMPTS"} onReset={reset}>
     <section className="challenge-card compact"><div className="challenge-kicker"><Brain /> Deductive reasoning</div><h1>Break the hidden sequence.</h1><p>Black markers mean exact position. White means the right colour in another position.</p>
@@ -73,7 +75,7 @@ export function Detective({ game, escapeMode = false }) {
   return <GameFrame game={game} score={chosen === item.answer ? 140 : 0} step={escapeMode ? "ROOM 01" : "CASE FILE"} onReset={reset}>
     <section className="case-file"><div className="case-number">0{caseIndex + 1}</div><span className="panel-label">{escapeMode ? "ESCAPE SEQUENCE" : "ACTIVE INVESTIGATION"}</span><h1>{item.title}</h1><p className="case-setup">{item.setup}</p>
       <div className="evidence">{item.clues.map((clue,index) => <div key={clue}><span>{index + 1}</span><p>{clue}</p></div>)}</div><h3>{item.question}</h3>
-      <div className="case-options">{item.options.map((option,index) => <button key={option} onClick={() => setChosen(index)} className={chosen === null ? "" : index === item.answer ? "correct" : index === chosen ? "wrong" : ""}>{option}</button>)}</div>
+      <div className="case-options">{item.options.map((option,index) => <button key={option} onClick={() => chosen === null && setChosen(index)} className={chosen === null ? "" : index === item.answer ? "correct" : index === chosen ? "wrong" : ""}>{option}</button>)}</div>
       {chosen !== null && <div className="explanation"><Lightbulb /><p><strong>{chosen === item.answer ? "Evidence connected." : "Review the contradiction."}</strong>{item.why}</p><button onClick={reset}>Next case →</button></div>}
     </section>
   </GameFrame>;
