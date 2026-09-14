@@ -1,24 +1,39 @@
-# MegaMasti — No Filter
+# MegaMasti
 
-A premium, anonymous, safety-first South Asian conversation platform.
+MegaMasti is a premium, no-sign-up entertainment platform with strategy, logic, knowledge, creativity and social games for a broad age range.
 
-## Local setup
+## Technology
 
-1. Copy `.env.example` to `.env.local`.
-2. Add the Supabase project URL and anon key.
-3. Run `npm install` and `npm run dev`.
+- React 18 and React Router
+- Vite 5
+- `chess.js` for complete chess move validation
+- Local, privacy-friendly progress for favorites, recently played games, preferences and personal bests
+- Vercel deployment with SPA rewrites and security headers
 
-Without environment variables, the interface uses curated demo content.
+The current public library exposes only complete game routes. Additional concepts remain internal until their mechanics and content pass review.
 
-## Production build
+## Local development
 
 ```bash
-npm ci
+npm install
+npm run dev
+```
+
+No environment variables or account are required to play.
+
+## Quality gate
+
+```bash
+npm run lint
 npm run build
 ```
 
-Deploy the generated `dist/` directory. The included `public/.htaccess` enables SPA routing on Hostinger Apache hosting.
+`npm run build` runs ESLint before creating the production bundle. GitHub Actions runs the same checks for every push and pull request.
 
-## Database
+## Deployment
 
-Run `supabase/schema.sql` in the linked Supabase project before enabling production submissions.
+Vercel is configured to run `npm run build`, publish `dist`, and rewrite client-side routes to `index.html`. Pushes to `main` deploy through the connected Vercel project.
+
+## Data and privacy
+
+Gameplay progress is stored only in the visitor's browser. This release does not require Supabase and does not collect personal data.
