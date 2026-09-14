@@ -83,7 +83,7 @@ function Home() {
 
     {recent.length > 0 && <section className="continue-section"><div className="section-heading"><div><span>PICK UP WHERE YOU LEFT OFF</span><h2>Continue playing.</h2></div></div><div className="compact-game-row">{recent.slice(0,4).map(game => <GameCard game={game} key={game.id} />)}</div></section>}
 
-    <section className="daily-section"><div><span>DAILY CHALLENGE</span><h2>One focused challenge.<br />A fresh start every day.</h2><p>Today’s selection is determined by the date—no fake countdowns, no pressure.</p></div><GameCard game={daily} featured /></section>
+    <section className="daily-section"><div><span>DAILY PICK</span><h2>One thoughtful game.<br />A fresh pick every day.</h2><p>Today’s selection is determined by the date—no fake popularity or pressure.</p></div><GameCard game={daily} featured /></section>
 
     <section className="featured-section" id="featured"><div className="section-heading"><div><span>CURATED STARTING POINTS</span><h2>Strong places to begin.</h2></div><Link to="/games">View playable games <ArrowRight /></Link></div>
       <div className="featured-grid">{featured.map((game,index) => <div className={"feature-wrap f" + index} key={game.id}><GameCard game={game} featured /></div>)}</div>
