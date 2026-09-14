@@ -4,8 +4,8 @@ MegaMasti is a premium, no-sign-up entertainment platform with strategy, logic, 
 
 ## Technology
 
-- React 18 and React Router
-- Vite 5
+- React 19 and React Router 7
+- Vite 7
 - `chess.js` for complete chess move validation
 - Local, privacy-friendly progress for favorites, recently played games, preferences and personal bests
 - Vercel deployment with SPA rewrites and security headers
