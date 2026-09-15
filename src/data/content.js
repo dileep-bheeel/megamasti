@@ -63,40 +63,106 @@ export const quizBanks = {
 
 export const prompts = {
   detective:[
-    {title:"The Silent Gallery",setup:"A rare miniature vanished during a nine-minute power cut. Three people remained inside.",clues:["The curator says she used her phone torch, but her battery report shows the phone was off.","The guard logged the emergency exit at 8:14.","Fresh varnish was found on the curator’s glove."],question:"Which detail most directly contradicts a statement?",options:["The exit log","The battery report","The varnish"],answer:1,why:"The phone being off contradicts the curator’s specific claim that she used its torch."},
-    {title:"The Missing Blueprint",setup:"A sealed design vanished from a studio where only three keycards worked.",clues:["Every keycard entry was logged.","The printer produced one unclaimed page.","A mirror faced the keypad from the corridor."],question:"What should investigators examine first?",options:["The weather","The printer job history","Everyone’s handwriting"],answer:1,why:"The unclaimed print may reveal whether the document was copied rather than physically removed."}
+    {title:"The Silent Gallery",setup:"A rare miniature vanished during a nine-minute power cut. Three people remained inside.",clues:["The curator says she used her phone torch, but its battery report shows the phone was off.","The guard logged the emergency exit at 8:14.","Fresh varnish was found on the curator’s glove."],question:"Which detail most directly contradicts a statement?",options:["The exit log","The battery report","The varnish"],answer:1,why:"The phone being off directly contradicts the curator’s claim that she used its torch."},
+    {title:"The Missing Blueprint",setup:"A sealed design vanished from a studio where only three keycards worked.",clues:["Every keycard entry was logged.","The printer produced one unclaimed page.","A mirror faced the keypad from the corridor."],question:"What should investigators examine first?",options:["The weather","The printer job history","Everyone’s handwriting"],answer:1,why:"The unclaimed print may show that the document was copied rather than physically removed."},
+    {title:"The Late Train",setup:"A passenger claims a bag was stolen after the train left Hyderabad at 7:20.",clues:["A platform photograph shows the bag at 7:24.","The train’s verified departure was delayed until 7:31.","The passenger’s watch was nine minutes fast."],question:"Which conclusion is best supported?",options:["The theft happened before departure","The photograph is impossible","The watch proves who took it"],answer:0,why:"The timestamp and delayed departure place the bag on the platform after the originally scheduled time."},
+    {title:"The Sealed Kitchen",setup:"A competition recipe was altered overnight although the kitchen door remained sealed.",clues:["The seal number matches the previous evening’s record.","A smart oven downloaded a new programme at 2:06.","Only the event tablet can change oven programmes."],question:"Which object links access to the alteration?",options:["The door seal","The event tablet","The recipe folder"],answer:1,why:"The tablet is the only stated route for changing the programme recorded by the oven."},
+    {title:"The Vanishing Trophy",setup:"A school trophy disappeared between assembly and lunch.",clues:["The display glass was intact.","A maintenance form authorised cabinet access.","The form uses a room number that does not exist."],question:"What is the strongest sign of deception?",options:["The intact glass","The invalid room number","The lunch timing"],answer:1,why:"A fabricated room number directly undermines the legitimacy of the access form."},
+    {title:"The Riverside Signal",setup:"Two hikers report sending a distress signal from opposite riverbanks at the same moment.",clues:["One video shows the setting sun behind the camera.","The other shows the same sun across the water.","Both clips contain the same ferry horn sequence."],question:"What should be compared to test the timing claim?",options:["Their clothing colours","The horn sequence timestamps","The river depth"],answer:1,why:"A shared, time-specific sound can align the recordings more reliably than appearance or location."},
+    {title:"The Borrowed Laptop",setup:"A draft was deleted while its owner was in a meeting.",clues:["The account login came from the office network.","The keyboard language changed at the same minute.","A scheduled software update had remote access."],question:"What must investigators avoid assuming?",options:["A network login proves a person was at the keyboard","The language changed","The meeting occurred"],answer:0,why:"Remote or automated access means a login location alone does not identify the individual operating the device."},
+    {title:"The Empty Parcel",setup:"A sealed parcel arrived with no item inside.",clues:["Its recorded dispatch weight was 1.4 kg.","The delivery scan recorded 0.3 kg.","The outer seal is genuine but the base tape differs."],question:"Where was interference most likely detectable?",options:["Before the dispatch weighing","Between dispatch and delivery scans","After the recipient opened it"],answer:1,why:"The measured weight changed during that interval, and the different base tape supports later access."}
   ],
   story:{
-    characters:["a retired cartographer","a fearless school debater","a musician who hears memories","a robot trained on folk tales","a chef who cannot taste"],
-    worlds:["a city where shadows vote","a library aboard a night train","a floating market during a solar eclipse","a village that appears once a decade","a museum of unfinished inventions"],
-    conflicts:["must return something nobody remembers losing","discovers tomorrow’s newspaper","is followed by a door that opens anywhere","must win without telling the truth","has one hour to change an old promise"],
-    twists:["the rival has been protecting them","the map is drawn from a memory","the apparent prize is a warning","the narrator caused the mystery","the final choice changes the beginning"]
+    characters:["a retired cartographer","a fearless school debater","a musician who hears memories","a robot trained on folk tales","a chef who cannot taste","a child who repairs forgotten toys","an astronaut afraid of open skies","a librarian who receives letters from the future","a boatmaker whose boats refuse water","a grandmother who remembers other people’s dreams"],
+    worlds:["a city where shadows vote","a library aboard a night train","a floating market during a solar eclipse","a village that appears once a decade","a museum of unfinished inventions","a desert crossed by moving staircases","a monsoon town where roads change nightly","an observatory beneath the sea","a cricket ground at the edge of time","a mountain whose echoes answer questions"],
+    conflicts:["must return something nobody remembers losing","discovers tomorrow’s newspaper","is followed by a door that opens anywhere","must win without telling the truth","has one hour to change an old promise","finds that every lie becomes visible","must protect a rival’s secret","can save the town only by giving up a talent","receives a map that redraws itself","must choose which memory the world keeps"],
+    twists:["the rival has been protecting them","the map is drawn from a memory","the apparent prize is a warning","the narrator caused the mystery","the final choice changes the beginning","the villain is a future version of the hero","the missing object never existed","the rescue is actually an invitation","the prophecy describes yesterday","the safest choice carries the greatest cost"]
   },
-  debate:["Homework should be replaced by independent projects.","Cities should reserve one day each week for car-free streets.","Failure should be graded as part of learning.","Museums should return important objects to their places of origin."],
-  caption:["A goat standing confidently at a bus stop","A wedding photographer running through unexpected rain","Three grandparents intensely studying a smartphone","A cricket ball resting inside a teacup"],
+  debate:[
+    "Homework should be replaced by independent projects.",
+    "Cities should reserve one day each week for car-free streets.",
+    "Failure should be graded as part of learning.",
+    "Museums should return important objects to their places of origin.",
+    "Schools should teach media literacy as a core subject.",
+    "Public parks should receive more funding than new parking spaces.",
+    "Teenagers should help design the rules that affect school life.",
+    "Artificial intelligence should never make final decisions about people.",
+    "Every city should protect quiet public spaces.",
+    "Competitive sports should reward teamwork as visibly as winning."
+  ],
+  caption:[
+    "A goat standing confidently at a bus stop",
+    "A wedding photographer running through unexpected rain",
+    "Three grandparents intensely studying a smartphone",
+    "A cricket ball resting inside a teacup",
+    "A cat occupying the only chair in a serious meeting",
+    "A street-food vendor serving one extremely formal customer",
+    "A bicycle decorated like a royal carriage",
+    "A family taking directions from the youngest child",
+    "A kite caught perfectly on a traffic sign",
+    "A sleepy passenger guarding six lunchboxes"
+  ],
   inventions:[
-    ["an umbrella","a bicycle","help people save water"],
-    ["a lunchbox","a solar panel","keep a neighbourhood cool"],
-    ["a kite","a sensor","make streets safer at night"],
-    ["a bookshelf","a wheel","help someone learn a language"]
+    ["an umbrella","a bicycle","help people save water"],["a lunchbox","a solar panel","keep a neighbourhood cool"],
+    ["a kite","a sensor","make streets safer at night"],["a bookshelf","a wheel","help someone learn a language"],
+    ["a clay pot","a phone case","keep medicine cool"],["a cricket bat","a rain gauge","teach weather science"],
+    ["a shawl","a rechargeable lamp","help during power cuts"],["a rickshaw mirror","a projector","make travel safer"],
+    ["a schoolbag","a hand pump","reduce plastic use"],["a window grill","a garden","grow food in small homes"]
   ],
-  charades:["A detective who is afraid of clues","A cricket commentator at a silent match","A chef cooking during an earthquake","A tourist asking directions from a statue"],
+  mysteries:[
+    "A handwritten poem disappears from a locked community library. Build three fair clues involving borrowing records, fresh ink and a misplaced bookmark.",
+    "A cricket team’s lucky coin vanishes before the final. Use a torn scorecard, red dust and a photograph taken at the wrong time.",
+    "Someone changes the winning design after an exhibition closes. Include a printer queue, a reflected screen and one honest mistake.",
+    "A sealed music room produces a recording nobody remembers making. Use a tuning fork, a power-cut log and rain on one window.",
+    "A family recipe appears online before a competition. Include two similar notebooks, a grocery receipt and a voice message.",
+    "A sculpture moves across a museum overnight without triggering the alarm. Use floor polish, a maintenance trolley and a misleading shadow.",
+    "A school election ballot box contains one impossible vote. Use attendance records, folded paper and a clock that stopped.",
+    "A ferry passenger’s suitcase arrives before its owner. Use baggage tags, a changed platform and two people with the same initials."
+  ],
+  charades:[
+    "A detective who is afraid of clues","A cricket commentator at a silent match","A chef cooking during an earthquake","A tourist asking directions from a statue",
+    "A robot learning bhangra","A teacher chasing a runaway kite","A goalkeeper protecting a birthday cake","A magician whose tricks happen too early",
+    "A grandparent winning a video-game tournament","A tailor measuring an invisible customer","A musician conducting traffic","An astronaut shopping in a crowded bazaar"
+  ],
   forbidden:[
-    {word:"Internet",banned:["online","web","computer","phone"]},
-    {word:"Monsoon",banned:["rain","season","cloud","water"]},
-    {word:"Democracy",banned:["vote","government","people","election"]},
-    {word:"Memory",banned:["remember","brain","past","forget"]}
+    {word:"Internet",banned:["online","web","computer","phone"]},{word:"Monsoon",banned:["rain","season","cloud","water"]},
+    {word:"Democracy",banned:["vote","government","people","election"]},{word:"Memory",banned:["remember","brain","past","forget"]},
+    {word:"Cricket",banned:["bat","ball","wicket","match"]},{word:"Library",banned:["book","read","shelf","quiet"]},
+    {word:"Traffic",banned:["car","road","jam","drive"]},{word:"Festival",banned:["celebrate","holiday","music","crowd"]},
+    {word:"Gravity",banned:["fall","Earth","pull","weight"]},{word:"Recipe",banned:["cook","food","ingredients","kitchen"]}
   ],
-  missions:["Make someone say the word ‘exactly’.","Get two players to copy your hand position.","Ask a question that everyone answers differently.","Convince the group to change seats without revealing why."],
+  missions:[
+    "Make someone say the word ‘exactly’.","Get two players to copy your hand position.","Ask a question that everyone answers differently.","Convince the group to change seats without revealing why.",
+    "Make the group mention three different cities.","Get someone to offer you an object without asking directly.","Cause two players to use the same phrase.","Make everyone look toward the same side of the room.",
+    "Get a player to tell a story beginning with ‘Once’.","Persuade the group to choose a team name."
+  ],
   feud:[
     {q:"Name something families carry on a long train journey.",answers:[["Food",35],["Water",25],["Bedding",15],["Cards or games",10],["Chargers",8]]},
-    {q:"Name a reason someone checks their phone immediately after waking.",answers:[["Messages",34],["Time",27],["Notifications",19],["Weather",8],["Alarm",7]]}
+    {q:"Name a reason someone checks their phone immediately after waking.",answers:[["Messages",34],["Time",27],["Notifications",19],["Weather",8],["Alarm",7]]},
+    {q:"Name something people protect from monsoon rain.",answers:[["Phone",30],["Clothes",25],["Documents",18],["Shoes",12],["Food",8]]},
+    {q:"Name something usually shared at a family gathering.",answers:[["Food",38],["Stories",22],["Photographs",16],["News",12],["Gifts",7]]},
+    {q:"Name something students do just before an exam.",answers:[["Revise",36],["Ask friends",20],["Pray",17],["Check stationery",12],["Drink water",8]]},
+    {q:"Name something that can delay a city journey.",answers:[["Traffic",44],["Rain",20],["Roadworks",14],["Vehicle trouble",10],["A procession",6]]},
+    {q:"Name something people photograph at a wedding.",answers:[["The couple",42],["Food",18],["Family",17],["Decorations",11],["Friends",8]]},
+    {q:"Name something found on a rooftop in South Asia.",answers:[["Water tank",31],["Clothesline",24],["Satellite dish",18],["Plants",13],["Chairs",7]]}
   ]
 };
 
 export const chessLessons = [
-  {title:"How the board speaks",body:"Files run a–h, ranks run 1–8, and the lower-right square is always light. White moves first."},
-  {title:"Control the centre",body:"Central squares give pieces more options. Develop knights and bishops before launching an attack."},
-  {title:"Protect the king",body:"Castle early when safe. A material advantage means little if your king can be forced into checkmate."},
-  {title:"Checks, captures, threats",body:"Before every move, examine forcing options for both players in that order."}
+  {title:"Board basics",body:"Files run a–h, ranks run 1–8, and the lower-right square is light. White moves first."},
+  {title:"Pawn movement",body:"Pawns move forward, capture diagonally and may advance two squares from their starting rank."},
+  {title:"The knight",body:"Knights jump in an L-shape: two squares one way and one across. They are strongest near the centre."},
+  {title:"The bishop",body:"Bishops travel diagonally and remain on one colour. Open diagonals before expecting them to contribute."},
+  {title:"The rook",body:"Rooks travel along ranks and files. They become powerful on open files and the seventh rank."},
+  {title:"The queen",body:"The queen combines rook and bishop movement, but developing her too early can lose time to attacks."},
+  {title:"The king",body:"The king moves one square and may never enter check. In the endgame it becomes an active fighting piece."},
+  {title:"Capturing",body:"Material matters, but every capture changes lines and threats. Check the opponent’s reply before taking."},
+  {title:"Check",body:"A checked king must move, block the attack or capture the attacking piece. No other move is legal."},
+  {title:"Checkmate",body:"Checkmate occurs when the king is attacked and has no legal defence. The game ends immediately."},
+  {title:"Forks",body:"A fork attacks two targets at once. Knights are famous for forks, but every piece can create one."},
+  {title:"Pins",body:"A pinned piece cannot move safely because doing so would expose a more valuable piece behind it."},
+  {title:"Skewers",body:"A skewer attacks a valuable piece first; when it moves, a second piece behind it is lost."},
+  {title:"Opening principles",body:"Control the centre, develop minor pieces, castle safely and avoid moving the same piece repeatedly without purpose."},
+  {title:"Basic endings",body:"Activate the king, create passed pawns and place rooks behind pawns. Calculate promotion races precisely."}
 ];
+
