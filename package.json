@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "eslint . && vite build",
+    "seo:generate": "node scripts/generate-sitemap.mjs",
+    "build": "npm run seo:generate && eslint . && vite build",
     "preview": "vite preview",
     "lint": "eslint ."
   },

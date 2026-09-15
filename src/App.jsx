@@ -1,6 +1,6 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Accessibility, ArrowRight, Brain, ChevronRight, Gamepad2, Heart, Menu, Search, Sparkles, Trophy, Users, X, Zap } from "lucide-react";
-import { BrowserRouter, Link, NavLink, Outlet, Route, Routes, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { BrowserRouter, Link, NavLink, Outlet, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { featuredIds, gameCategories, games, getGame } from "./data/games";
 import { isPlayable, withDetails } from "./data/gameDetails";
 import { useProgress } from "./context/ProgressContext";
@@ -10,6 +10,8 @@ import { getDailyGame, getUtcDateKey } from "./utils/daily";
 
 const GameEngine = lazy(() => import("./games/GameEngine"));
 const playableGames = games.filter(game => isPlayable(game.id)).map(withDetails);
+const websiteSchema = {"@context":"https://schema.org","@type":"WebSite",name:"MegaMasti",url:"https://megamasti.com",description:"Premium strategy, logic, knowledge, creativity and social games for every generation.",inLanguage:"en"};
+const librarySchema = {"@context":"https://schema.org","@type":"CollectionPage",name:"MegaMasti Game Library",url:"https://megamasti.com/games",description:"Browse 25 free strategy, logic, knowledge, creativity and social games.",isPartOf:{"@type":"WebSite",name:"MegaMasti",url:"https://megamasti.com"}};
 
 function Logo() {
   return <Link to="/" className="logo"><span className="logo-symbol">M</span><span>MEGA<strong>MASTI</strong><small>PLAY • LEARN • CREATE</small></span></Link>;
@@ -17,15 +19,34 @@ function Logo() {
 
 function Header({ onAccessibility }) {
   const [open,setOpen] = useState(false);
+  const menuButtonRef = useRef(null);
+  const menuCloseRef = useRef(null);
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.activeElement;
+    const close = () => setOpen(false);
+    const onKeyDown = event => {
+      if (event.key === "Escape") close();
+      if (event.key === "Tab") {
+        const items = document.querySelectorAll("#primary-navigation a, #primary-navigation button");
+        const first = items[0], last = items[items.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
+    };
+    document.addEventListener("keydown",onKeyDown);
+    menuCloseRef.current?.focus();
+    return () => { document.removeEventListener("keydown",onKeyDown); previous?.focus?.(); };
+  },[open]);
   return <header className="site-header"><Logo />
-    <nav className={open ? "open" : ""} aria-label="Primary navigation">
+    <nav id="primary-navigation" className={open ? "open" : ""} aria-label="Primary navigation">
       <NavLink end to="/" onClick={() => setOpen(false)}>Home</NavLink>
       <NavLink to="/games" onClick={() => setOpen(false)}>Games</NavLink>
-      <a href="/#categories" onClick={() => setOpen(false)}>Categories</a>
-      <a href="/#daily" onClick={() => setOpen(false)}>Daily pick</a>
-      <button className="mobile-close" onClick={() => setOpen(false)} aria-label="Close menu"><X /></button>
+      <Link to="/#categories" onClick={() => setOpen(false)}>Categories</Link>
+      <Link to="/#daily" onClick={() => setOpen(false)}>Daily pick</Link>
+      <button ref={menuCloseRef} type="button" className="mobile-close" onClick={() => setOpen(false)} aria-label="Close menu"><X /></button>
     </nav>
-    <div className="header-tools"><button className="access-button" onClick={onAccessibility}><Accessibility size={18} /> Accessibility</button><Link className="play-button" to="/games">Start playing <ArrowRight size={17} /></Link><button className="menu-button" onClick={() => setOpen(true)} aria-label="Open menu"><Menu /></button></div>
+    <div className="header-tools"><button type="button" className="access-button" onClick={onAccessibility}><Accessibility size={18} /> Accessibility</button><Link className="play-button" to="/games">Start playing <ArrowRight size={17} /></Link><button ref={menuButtonRef} type="button" className="menu-button" onClick={() => setOpen(true)} aria-label="Open menu" aria-expanded={open} aria-controls="primary-navigation"><Menu /></button></div>
   </header>;
 }
 
@@ -66,7 +87,7 @@ function CategoryShowcase() {
 }
 
 function Home() {
-  usePageMeta({title:"MegaMasti — Play Deeper. Think Brighter.",description:"Premium strategy, logic, knowledge, creativity and social games for every generation."});
+  usePageMeta({title:"MegaMasti — Play Deeper. Think Brighter.",description:"Play 25 free strategy, logic, knowledge, creativity and social games for curious minds of every generation.",structuredData:websiteSchema});
   const navigate = useNavigate();
   const {progress} = useProgress();
   const daily = useDailyGame();
@@ -79,7 +100,7 @@ function Home() {
     navigate("/play/" + pool[Math.floor(Math.random() * pool.length)].id);
   };
 
-  return <main>
+  return <main id="main-content" tabIndex="-1">
     <section className="home-hero">
       <div className="hero-grid" />
       <div className="hero-copy"><div className="edition"><Sparkles size={15} /> Games for curious minds, ages 6–80+</div>
@@ -121,7 +142,7 @@ function Home() {
 }
 
 function Catalogue() {
-  usePageMeta({title:"Games — MegaMasti",description:"Browse MegaMasti’s production-ready strategy, logic, knowledge, creativity and social games.",path:"/games"});
+  usePageMeta({title:"25 Free Brain & Family Games — MegaMasti",description:"Browse 25 complete strategy, logic, knowledge, creativity and social games. Play immediately with no compulsory account.",path:"/games",structuredData:librarySchema});
   const [params] = useSearchParams();
   const requestedCategory = params.get("category");
   const [category,setCategory] = useState(gameCategories.includes(requestedCategory) ? requestedCategory : "All games");
@@ -130,7 +151,7 @@ function Catalogue() {
   const filtered = useMemo(() => playableGames.filter(game => (category === "All games" || game.category === category) && (game.title + game.description + game.skills.join(" ")).toLowerCase().includes(query.toLowerCase())),[category,query]);
   const favorites = progress.favorites.map(id => playableGames.find(game => game.id === id)).filter(Boolean);
 
-  return <main className="catalogue-page">
+  return <main id="main-content" tabIndex="-1" className="catalogue-page">
     <section className="catalogue-head"><span>PLAYABLE NOW</span><h1>Choose a challenge.<br /><em>Build a skill.</em></h1><p>Only complete, functional experiences appear here. More games will join the library after passing gameplay and quality review.</p></section>
     {favorites.length > 0 && <section className="favorites-strip" id="favorites"><span>YOUR FAVORITES</span><div>{favorites.map(game => <Link key={game.id} to={"/play/" + game.id}>{game.title}<ChevronRight /></Link>)}</div></section>}
     <section className="filters"><div className="catalogue-search"><Search /><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search games or skills…" aria-label="Search games" /></div><div className="filter-tabs">{gameCategories.map(item => <button key={item} onClick={() => setCategory(item)} className={category === item ? "active" : ""}>{item}</button>)}</div></section>
@@ -144,22 +165,76 @@ function PlayPage() {
   const {gameId} = useParams();
   const base = getGame(gameId);
   const game = base && isPlayable(base.id) ? withDetails(base) : null;
-  usePageMeta({title:game ? game.title + " — MegaMasti" : "Game unavailable — MegaMasti",description:game ? game.description + " Learn how to play and start immediately." : "This MegaMasti game is not available.",path:game ? "/play/" + game.id : "/games"});
+  const gameSchema = useMemo(() => game ? {"@context":"https://schema.org","@type":"VideoGame",name:game.title,url:"https://megamasti.com/play/"+game.id,description:game.description,applicationCategory:"Browser game",gamePlatform:"Web browser",playMode:game.players.includes("Solo")?"SinglePlayer":"MultiPlayer",isAccessibleForFree:true,inLanguage:"en",audience:{"@type":"PeopleAudience",suggestedMinAge:parseInt(game.ages,10)}} : null,[game]);
+  usePageMeta({title:game ? game.title + " — Play Free | MegaMasti" : "Game unavailable — MegaMasti",description:game ? "Play "+game.title+" free on MegaMasti. "+game.goal : "This MegaMasti game is not available.",path:game ? "/play/" + game.id : "/404",robots:game?"index, follow":"noindex, nofollow",structuredData:gameSchema});
   if (!game) return <NotFound title="This game is not ready to play." />;
-  return <Suspense fallback={<main className="loading-state"><div /><span>Preparing {game.title}…</span></main>}><GameEngine game={game} /></Suspense>;
+  return <Suspense fallback={<main id="main-content" tabIndex="-1" className="loading-state" role="status"><div /><span>Preparing {game.title}…</span></main>}><GameEngine game={game} /></Suspense>;
 }
 
 function NotFound({title="That page wandered off the board."}) {
-  usePageMeta({title:"Page not found — MegaMasti",description:"Return to the MegaMasti game library.",path:"/404"});
-  return <main className="not-found-page"><span>404</span><h1>{title}</h1><p>Nothing is broken. This address simply does not lead to a playable experience.</p><Link to="/games">Browse playable games <ArrowRight /></Link></main>;
+  const location = useLocation();
+  usePageMeta({title:"Page not found — MegaMasti",description:"Return to the MegaMasti game library.",path:location.pathname,robots:"noindex, nofollow"});
+  return <main id="main-content" tabIndex="-1" className="not-found-page"><span>404</span><h1>{title}</h1><p>Nothing is broken. This address simply does not lead to a playable experience.</p><Link to="/games">Browse playable games <ArrowRight /></Link></main>;
 }
 
 function Footer() {
- return <footer className="site-footer"><Logo /><p>Intelligent entertainment for every generation.</p><div><Link to="/games">Games</Link><a href="/#how">How it works</a><a href="mailto:hello@megamasti.com">Contact</a></div><small>© 2026 MegaMasti. Play thoughtfully.</small></footer>;
+ return <footer className="site-footer"><Logo /><p>Intelligent entertainment for every generation.</p><div><Link to="/games">Games</Link><Link to="/#how">How it works</Link><a href="mailto:hello@megamasti.com">Contact</a></div><small>© 2026 MegaMasti. Play thoughtfully.</small></footer>;
+}
+
+function RouteEffects() {
+  const location = useLocation();
+  const firstRender = useRef(true);
+  useEffect(() => {
+    if (location.hash) {
+      requestAnimationFrame(() => document.getElementById(location.hash.slice(1))?.scrollIntoView());
+      return;
+    }
+    window.scrollTo({top:0,left:0,behavior:"auto"});
+    if (firstRender.current) { firstRender.current = false; return; }
+    requestAnimationFrame(() => document.getElementById("main-content")?.focus({preventScroll:true}));
+  },[location.pathname,location.hash]);
+  return null;
+}
+
+function AccessibilityDialog({ open, onClose, preferences, setPreference }) {
+  const dialogRef = useRef(null);
+  const closeRef = useRef(null);
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeRef.current?.focus();
+    const onKeyDown = event => {
+      if (event.key === "Escape") onClose();
+      if (event.key === "Tab") {
+        const items = dialogRef.current?.querySelectorAll("button, input");
+        if (!items?.length) return;
+        const first = items[0], last = items[items.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
+    };
+    document.addEventListener("keydown",onKeyDown);
+    return () => {
+      document.removeEventListener("keydown",onKeyDown);
+      document.body.style.overflow = previousOverflow;
+      previous?.focus?.();
+    };
+  },[open,onClose]);
+  if (!open) return null;
+  return <div className="drawer-backdrop" onMouseDown={event => event.target === event.currentTarget && onClose()}><section ref={dialogRef} className="access-drawer" role="dialog" aria-modal="true" aria-labelledby="access-title">
+    <button ref={closeRef} type="button" onClick={onClose} aria-label="Close accessibility settings"><X /></button><span>ACCESSIBILITY</span><h2 id="access-title">Make MegaMasti yours.</h2>
+    <label><input type="checkbox" checked={preferences.largeText} onChange={event => setPreference("largeText",event.target.checked)} /> Larger text</label>
+    <label><input type="checkbox" checked={preferences.highContrast} onChange={event => setPreference("highContrast",event.target.checked)} /> Higher contrast</label>
+    <label><input type="checkbox" checked={preferences.reducedMotion} onChange={event => setPreference("reducedMotion",event.target.checked)} /> Reduced motion</label>
+    <label><input type="checkbox" checked={preferences.sound} onChange={event => setPreference("sound",event.target.checked)} /> Sound when available</label>
+  </section></div>;
 }
 
 function Layout() {
   const [accessOpen,setAccessOpen] = useState(false);
+  const closeAccessibility = useCallback(() => setAccessOpen(false),[]);
   const {progress,setPreference} = useProgress();
   const preferences = progress.preferences;
   useEffect(() => {
@@ -167,11 +242,11 @@ function Layout() {
     document.body.classList.toggle("high-contrast",preferences.highContrast);
     document.body.classList.toggle("reduced-motion",preferences.reducedMotion);
   },[preferences]);
-  return <div className="site-shell"><Header onAccessibility={() => setAccessOpen(true)} /><Outlet /><Footer />
-    {accessOpen && <div className="drawer-backdrop" onMouseDown={event => event.target === event.currentTarget && setAccessOpen(false)}><section className="access-drawer" role="dialog" aria-modal="true" aria-labelledby="access-title"><button onClick={() => setAccessOpen(false)} aria-label="Close accessibility settings"><X /></button><span>ACCESSIBILITY</span><h2 id="access-title">Make MegaMasti yours.</h2><label><input type="checkbox" checked={preferences.largeText} onChange={event => setPreference("largeText",event.target.checked)} /> Larger text</label><label><input type="checkbox" checked={preferences.highContrast} onChange={event => setPreference("highContrast",event.target.checked)} /> Higher contrast</label><label><input type="checkbox" checked={preferences.reducedMotion} onChange={event => setPreference("reducedMotion",event.target.checked)} /> Reduced motion</label><label><input type="checkbox" checked={preferences.sound} onChange={event => setPreference("sound",event.target.checked)} /> Sound when available</label></section></div>}
+  return <div className="site-shell"><a className="skip-link" href="#main-content">Skip to main content</a><Header onAccessibility={() => setAccessOpen(true)} /><Outlet /><Footer />
+    <AccessibilityDialog open={accessOpen} onClose={closeAccessibility} preferences={preferences} setPreference={setPreference} />
   </div>;
 }
 
 export default function App() {
- return <BrowserRouter><Routes><Route element={<Layout />}><Route index element={<Home />} /><Route path="/games" element={<Catalogue />} /></Route><Route path="/play/:gameId" element={<PlayPage />} /><Route path="*" element={<NotFound />} /></Routes></BrowserRouter>;
+ return <BrowserRouter><RouteEffects /><Routes><Route element={<Layout />}><Route index element={<Home />} /><Route path="/games" element={<Catalogue />} /></Route><Route path="/play/:gameId" element={<PlayPage />} /><Route path="*" element={<NotFound />} /></Routes></BrowserRouter>;
 }

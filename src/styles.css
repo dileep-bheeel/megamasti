@@ -641,3 +641,36 @@ button:active,.play-button:active,.mega-cta:active,.cta:active{transform:transla
   .mode-tabs{width:100%;margin-top:8px;margin-left:0}.challenge-kicker:has(.mode-tabs){flex-wrap:wrap}
   .captured-row{font-size:16px}
 }
+
+/* Release quality: focus, rendering containment and resilient controls */
+.site-shell{overflow-x:clip}
+.skip-link{position:fixed;left:16px;top:12px;z-index:200;transform:translateY(-150%);background:var(--paper);color:#090a0c;padding:11px 15px;text-decoration:none;font-weight:800;border-radius:6px}
+.skip-link:focus{transform:none}
+#main-content:focus,.completion:focus{outline:none}
+#main-content:focus-visible,.completion:focus-visible{outline:2px solid var(--acid);outline-offset:-4px}
+.category-showcase,.continue-section,.progress-shelf,.daily-section,.featured-section,.skill-worlds,.how-section,.closing-cta{content-visibility:auto;contain-intrinsic-size:1px 720px}
+.engine-loading{min-height:calc(100vh - 76px);display:grid;place-items:center;align-content:center;gap:14px;color:#aaa6b0}
+.engine-loading>div,.loading-state>div{width:34px;height:34px;border:2px solid var(--line);border-top-color:var(--game-accent,var(--acid));border-radius:50%;animation:spin .8s linear infinite}
+.intro-related{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.intro-related>span{width:100%;color:#7f7b85;font-size:8px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.intro-related a{display:inline-flex;align-items:center;gap:5px;min-height:40px;padding:8px 10px;border:1px solid var(--line);color:#aaa6b0;text-decoration:none;font-size:10px}
+.intro-related svg{width:13px}
+.favorite-button,.round-button{width:44px;height:44px}
+.filter-tabs button,.text-action,.empty-state button,.lesson-panel>button{min-height:44px}
+.mode-tabs button{min-height:36px;padding:8px 10px}
+.game-card-foot,.site-footer,.trust-row span,.keyboard-hint{color:#918d98}
+.catalogue-search input::placeholder,.word-stage input::placeholder,.studio-card textarea::placeholder{color:#8f8b96;opacity:1}
+body.high-contrast .game-card-foot,body.high-contrast .site-footer,body.high-contrast .trust-row span,body.high-contrast .keyboard-hint,body.high-contrast .intro-related>span{color:#e5e1e9}
+@media(pointer:coarse){.mode-tabs button,.intro-related a{min-height:44px}.palette button{width:48px;height:48px}}
+@media(max-width:600px){
+  .site-header{padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+  .game-toolbar{padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right))}
+  .game-stage{padding-bottom:max(24px,env(safe-area-inset-bottom))}
+  .mode-tabs button{min-height:44px;flex:1}
+  .intro-related{align-items:stretch}.intro-related a{flex:1;justify-content:center;min-width:130px}
+  .catalogue-meta{font-size:9px}
+  .brief,.case-setup,.universal-stage>p{overflow-wrap:anywhere}
+}
+@media(max-height:520px) and (orientation:landscape){
+  .game-stage{place-items:start center;padding-top:18px}.game-toolbar{height:64px}.game-intro{grid-template-columns:minmax(220px,.7fr) 1.3fr}.intro-visual{min-height:310px}.intro-visual>.game-artwork{min-height:245px}
+}

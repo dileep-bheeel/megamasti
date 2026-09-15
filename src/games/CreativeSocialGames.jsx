@@ -44,7 +44,7 @@ export function CreativeStudio({ game, type }) {
   return <GameFrame game={game} score={score} step="STUDIO" onReset={reset}>
     <section className="studio-card"><span className="panel-label">{label}</span><h1>{title}</h1><div className="brief">{brief}</div>
       <textarea value={text} onChange={event=>setText(event.target.value)} placeholder="Shape your response here…" aria-label="Creative response"/>
-      <div className="creation-meter"><i style={{width:Math.min(100,text.trim().length/minimum*100)+"%"}}/><span>{text.trim().length} / {minimum} character foundation</span></div>
+      <div className="creation-meter" role="progressbar" aria-label="Creative response foundation" aria-valuemin="0" aria-valuemax={minimum} aria-valuenow={Math.min(minimum,text.trim().length)}><i style={{width:Math.min(100,text.trim().length/minimum*100)+"%"}}/><span>{text.trim().length} / {minimum} character foundation</span></div>
       <div className="studio-foot"><p><Lightbulb/>{guidance}</p><button className="cta" disabled={text.trim().length<minimum} onClick={()=>setDone(true)}>Complete creation →</button></div>
     </section>
   </GameFrame>;
@@ -73,8 +73,8 @@ export function SocialRound({ game,type }) {
 
   return <GameFrame game={game} score={wins*60} step={"ROUND "+(rounds+1)+"/5"} onReset={reset}>
     <section className="social-stage"><span className="panel-label">GROUP ROUND</span><h1>{title}</h1><p>{detail}</p>
-      <button className={"reveal-card "+(revealed?"open":"")} onClick={()=>!revealed&&setRevealed(true)}>{revealed?<strong>{hidden}</strong>:<><span>Private card</span><strong>Tap when only the active player can see</strong></>}</button>
-      {revealed&&<><div className="timer-line"><Clock3/><i style={{width:(seconds/60*100)+"%"}}/></div>{seconds===0&&<p className="time-up" aria-live="polite">Time is up. Record the outcome and pass the device.</p>}<div className="outcome-actions"><button onClick={()=>next(false)}><XCircle/>Pass</button><button onClick={()=>next(true)}><CheckCircle2/>Success</button></div></>}
+      <button type="button" aria-expanded={revealed} className={"reveal-card "+(revealed?"open":"")} onClick={()=>!revealed&&setRevealed(true)}>{revealed?<strong>{hidden}</strong>:<><span>Private card</span><strong>Tap when only the active player can see</strong></>}</button>
+      {revealed&&<><div className="timer-line" role="progressbar" aria-label="Round time remaining" aria-valuemin="0" aria-valuemax="60" aria-valuenow={seconds}><Clock3/><i style={{width:(seconds/60*100)+"%"}}/></div>{seconds===0&&<p className="time-up" aria-live="polite">Time is up. Record the outcome and pass the device.</p>}<div className="outcome-actions"><button type="button" onClick={()=>next(false)}><XCircle/>Pass</button><button type="button" onClick={()=>next(true)}><CheckCircle2/>Success</button></div></>}
       {!revealed&&<button className="text-action" onClick={()=>next(false)}>Skip this card</button>}
     </section>
   </GameFrame>;
@@ -130,8 +130,8 @@ export function RhythmLab({ game }) {
   const status=phase==="showing"?"Listen—input is locked.":phase==="input"?"Your turn. Repeat the pattern.":sequence.length>3?"Level cleared. Play the longer pattern.":"Press Play sequence when ready.";
   return <GameFrame game={game} score={(sequence.length-3)*50} step={"LEVEL "+(sequence.length-2)} onReset={reset}>
     <section className="rhythm-stage"><div className="challenge-kicker"><Volume2/>Audio-visual memory <span className="strikes">{strikes}/3 slips</span></div><h1>Hear the pattern.<br/>Become the pattern.</h1><p aria-live="polite">{status}</p>
-      <div className={"rhythm-pads "+(phase==="showing"?"locked":"")}>{pads.map((color,index)=><button key={color} disabled={phase!=="input"} onClick={()=>hit(index)} className={flash===index?"flash":""} style={{"--pad":color}}><span>{index+1}</span></button>)}</div>
-      <button className="cta" disabled={phase==="showing"} onClick={play}><Volume2/>{phase==="showing"?"Playing…":"Play sequence"}</button>
+      <div className={"rhythm-pads "+(phase==="showing"?"locked":"")} aria-label="Rhythm pads">{pads.map((color,index)=><button type="button" aria-label={"Rhythm pad "+(index+1)} key={color} disabled={phase!=="input"} onClick={()=>hit(index)} className={flash===index?"flash":""} style={{"--pad":color}}><span>{index+1}</span></button>)}</div>
+      <button type="button" className="cta" disabled={phase==="showing"} onClick={play}><Volume2/>{phase==="showing"?"Playing…":"Play sequence"}</button>
     </section>
   </GameFrame>;
 }

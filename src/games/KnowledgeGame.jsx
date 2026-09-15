@@ -44,11 +44,11 @@ export default function KnowledgeGame({ game, bankKey }) {
       if(selected!==null&&event.key==="Enter")next();
     }}>
       <div className="challenge-kicker"><Brain size={16} /> Knowledge expedition <span className={streak>1?"streak active":"streak"}><Flame/> {streak} streak</span></div>
-      <div className="progress"><i style={{ width: (index / questions.length * 100) + "%" }} /></div>
+      <div className="progress" role="progressbar" aria-label="Question progress" aria-valuemin="1" aria-valuemax={questions.length} aria-valuenow={index+1}><i style={{ width: ((index+1) / questions.length * 100) + "%" }} /></div>
       <h1>{question.q}</h1>
       <div className="answer-grid">
         {question.options.map((option,optionIndex)=>
-          <button key={option} autoFocus={optionIndex===0} onClick={()=>answer(optionIndex)} disabled={selected!==null} className={selected===null?"":optionIndex===question.answer?"correct":optionIndex===selected?"wrong":"dim"}>
+          <button type="button" key={option} autoFocus={optionIndex===0} onClick={()=>answer(optionIndex)} disabled={selected!==null} className={selected===null?"":optionIndex===question.answer?"correct":optionIndex===selected?"wrong":"dim"}>
             <span>{String.fromCharCode(65+optionIndex)}</span>{option}
             {selected!==null&&optionIndex===question.answer&&<Check/>}
           </button>
@@ -56,7 +56,7 @@ export default function KnowledgeGame({ game, bankKey }) {
       </div>
       {selected!==null&&<div className="explanation" aria-live="polite">
         <Lightbulb/><p><strong>{selected===question.answer?(streak>=3?"Excellent—your streak is building.":"Exactly right."):"Not quite—here’s the connection."}</strong>{question.why}</p>
-        <button onClick={next}>Continue <ChevronRight/></button>
+        <button type="button" onClick={next}>Continue <ChevronRight/></button>
       </div>}
       <small className="keyboard-hint">Keyboard: 1–4 to answer • Enter to continue</small>
     </section>

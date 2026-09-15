@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Brain, Lightbulb } from "lucide-react";
 import { prompts } from "../data/content";
 import { Completion, GameFrame, shuffle } from "./Common";
@@ -18,6 +18,7 @@ export function Sudoku({game}){
   const [level,setLevel]=useState("Medium"),[seed,setSeed]=useState(()=>Math.floor(Math.random()*9));
   const board=useMemo(()=>makeSudoku(level,seed),[level,seed]);
   const [grid,setGrid]=useState(()=>[...board.puzzle]),[selected,setSelected]=useState(null),[mistakes,setMistakes]=useState(0),[message,setMessage]=useState("Choose a cell and reason across its row, column and box.");
+  const cellRefs=useRef([]);
   const complete=grid.every((number,index)=>number===board.solution[index]);
   const restart=(nextLevel=level,nextSeed=seed)=>{const next=makeSudoku(nextLevel,nextSeed);setGrid([...next.puzzle]);setSelected(null);setMistakes(0);setMessage("Fresh grid. Start where the most digits are already visible.");};
   const chooseLevel=next=>{setLevel(next);restart(next,seed);};
@@ -27,12 +28,21 @@ export function Sudoku({game}){
     if(board.solution[selected]!==number){setMistakes(value=>value+1);setMessage("That digit conflicts with this grid. Recheck all three units.");return;}
     setGrid(values=>values.map((value,index)=>index===selected?number:value));setMessage("Correct placement. Use it to unlock the next deduction.");
   };
+  const moveFocus=(index,key)=>{
+    const offsets={ArrowUp:-9,ArrowDown:9,ArrowLeft:-1,ArrowRight:1};
+    if(!(key in offsets))return false;
+    let next=index+offsets[key];
+    if(key==="ArrowLeft"&&index%9===0)next=index+8;
+    if(key==="ArrowRight"&&index%9===8)next=index-8;
+    if(next<0)next+=81;if(next>80)next-=81;
+    setSelected(next);cellRefs.current[next]?.focus();return true;
+  };
   if(complete){const xp=Math.max(60,({Easy:190,Medium:240,Hard:300}[level])-mistakes*15);return <GameFrame game={game} score={xp} onReset={reset}><Completion title="Grid mastered." text={"Completed "+level.toLowerCase()+" mode with "+mistakes+" mistake"+(mistakes===1?"":"s")+". A fresh digit transformation is ready."} xp={xp} detail={{value:mistakes,label:"mistakes"}} onAgain={reset}/></GameFrame>;}
   const filled=grid.filter(Boolean).length-board.puzzle.filter(Boolean).length;
   return <GameFrame game={game} score={filled*4} step={level.toUpperCase()+" • "+mistakes+" MISTAKES"} onReset={reset}>
-    <div className="sudoku-layout"><section><div className="challenge-kicker"><Brain/>Sudoku journey <div className="mode-tabs">{["Easy","Medium","Hard"].map(item=><button key={item} className={level===item?"active":""} onClick={()=>chooseLevel(item)}>{item}</button>)}</div></div><h1>Every digit has one place.</h1>
-      <div className="sudoku-board" onKeyDown={event=>{const number=Number(event.key);if(number>=1&&number<=9)enter(number);}}>{grid.map((number,index)=><button key={index} className={(board.puzzle[index]?"given ":"")+(selected===index?"selected":"")} onClick={()=>!board.puzzle[index]&&setSelected(index)} aria-label={"Row "+(Math.floor(index/9)+1)+", column "+(index%9+1)+(number?", "+number:" empty")}>{number||""}</button>)}</div>
-      <div className="number-pad">{[1,2,3,4,5,6,7,8,9].map(number=><button key={number} onClick={()=>enter(number)}>{number}</button>)}</div><p className="game-message" aria-live="polite">{message}</p>
+    <div className="sudoku-layout"><section><div className="challenge-kicker"><Brain/>Sudoku journey <div className="mode-tabs" aria-label="Sudoku difficulty">{["Easy","Medium","Hard"].map(item=><button type="button" key={item} aria-pressed={level===item} className={level===item?"active":""} onClick={()=>chooseLevel(item)}>{item}</button>)}</div></div><h1>Every digit has one place.</h1>
+      <div className="sudoku-board" role="grid" aria-label="Sudoku board">{grid.map((number,index)=><button ref={element=>{cellRefs.current[index]=element;}} type="button" role="gridcell" tabIndex={index===(selected??board.puzzle.findIndex(value=>!value))?0:-1} key={index} className={(board.puzzle[index]?"given ":"")+(selected===index?"selected":"")} onFocus={()=>setSelected(index)} onClick={()=>setSelected(index)} onKeyDown={event=>{if(moveFocus(index,event.key)){event.preventDefault();return;}const digit=Number(event.key);if(digit>=1&&digit<=9)enter(digit);}} aria-readonly={Boolean(board.puzzle[index])} aria-selected={selected===index} aria-label={"Row "+(Math.floor(index/9)+1)+", column "+(index%9+1)+(number?", "+number:" empty")}>{number||""}</button>)}</div>
+      <div className="number-pad" aria-label="Sudoku number pad">{[1,2,3,4,5,6,7,8,9].map(number=><button type="button" aria-label={"Enter "+number} key={number} onClick={()=>enter(number)}>{number}</button>)}</div><p className="game-message" aria-live="polite">{message}</p>
     </section><aside className="lesson-panel"><span className="panel-label">COACH’S NOTE</span><h2>Scan before guessing.</h2><p>Examine the row, column and 3×3 box. A candidate is valid only when it satisfies all three.</p><div className="tip"><Lightbulb/>Start with units containing the most digits.</div></aside></div>
   </GameFrame>;
 }

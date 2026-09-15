@@ -9,6 +9,7 @@ const symbols = { p: "♟", r: "♜", n: "♞", b: "♝", q: "♛", k: "♚" };
 export default function ChessAcademy({ game }) {
   const chessRef = useRef(new Chess());
   const replyTimer = useRef(null);
+  const squareRefs = useRef({});
   const [,setVersion] = useState(0);
   const [selected,setSelected] = useState(null);
   const [lesson,setLesson] = useState(0);
@@ -16,6 +17,7 @@ export default function ChessAcademy({ game }) {
   const [xp,setXp] = useState(0);
   const [thinking,setThinking] = useState(false);
   const [promotion,setPromotion] = useState("q");
+  const [focusedSquare,setFocusedSquare] = useState("a1");
   const chess = chessRef.current;
   const board = chess.board();
 
@@ -24,7 +26,7 @@ export default function ChessAcademy({ game }) {
   const reset = () => {
     if (replyTimer.current) clearTimeout(replyTimer.current);
     chessRef.current = new Chess();
-    setVersion(value => value + 1); setSelected(null); setMessage("White to move. Select a piece."); setXp(0); setThinking(false);
+    setVersion(value => value + 1); setSelected(null); setFocusedSquare("a1"); setMessage("White to move. Select a piece."); setXp(0); setThinking(false);
   };
 
   const play = (row,column) => {
@@ -67,6 +69,14 @@ export default function ChessAcademy({ game }) {
   };
 
   const legal = selected ? chess.moves({square:selected,verbose:true}).map(move => move.to) : [];
+  const moveBoardFocus=(row,column,key)=>{
+    const offsets={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]};
+    if(!offsets[key])return false;
+    const [dr,dc]=offsets[key];
+    const nextRow=(row+dr+8)%8,nextColumn=(column+dc+8)%8;
+    const nextSquare="abcdefgh"[nextColumn]+(8-nextRow);
+    setFocusedSquare(nextSquare);squareRefs.current[nextSquare]?.focus();return true;
+  };
   const history=chess.history({verbose:true});
   const capturedWhite=history.filter(move=>move.color==="b"&&move.captured).map(move=>symbols[move.captured]);
   const capturedBlack=history.filter(move=>move.color==="w"&&move.captured).map(move=>symbols[move.captured]);
@@ -77,11 +87,11 @@ export default function ChessAcademy({ game }) {
     <div className="chess-layout">
       <section className="chess-panel">
         <div className="chess-head"><span>GUIDED MATCH</span><strong>{thinking ? "Coach thinking…" : "Your move"}</strong></div>
-        <div className="chess-board" aria-label="Interactive chess board">
+        <div className="chess-board" role="grid" aria-label="Interactive chess board. Use arrow keys to move between squares and Enter to select.">
           {board.flatMap((row,rowIndex) => row.map((piece,columnIndex) => {
             const square = "abcdefgh"[columnIndex] + (8 - rowIndex);
             const className = ((rowIndex + columnIndex) % 2 ? "dark" : "light") + (selected === square ? " selected" : "") + (legal.includes(square) ? " legal" : "");
-            return <button key={square} onClick={() => play(rowIndex,columnIndex)} className={className} aria-label={square + (piece ? " " + (piece.color === "w" ? "white " : "black ") + piece.type : " empty")}>
+            return <button ref={element=>{squareRefs.current[square]=element;}} type="button" role="gridcell" tabIndex={focusedSquare===square?0:-1} key={square} onFocus={()=>setFocusedSquare(square)} onKeyDown={event=>{if(moveBoardFocus(rowIndex,columnIndex,event.key))event.preventDefault();}} onClick={() => play(rowIndex,columnIndex)} className={className} aria-selected={selected===square} aria-label={square + (piece ? " " + (piece.color === "w" ? "white " : "black ") + piece.type : " empty")+(legal.includes(square)?", legal destination":"")}>
               {piece && <span className={piece.color === "w" ? "white-piece" : "black-piece"}>{symbols[piece.type]}</span>}
               <small>{columnIndex === 0 ? 8 - rowIndex : ""}{rowIndex === 7 ? "abcdefgh"[columnIndex] : ""}</small>
             </button>;

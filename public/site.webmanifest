@@ -2,7 +2,10 @@
   "name": "MegaMasti",
   "short_name": "MegaMasti",
   "description": "Premium games for every generation.",
+  "id": "/",
   "start_url": "/",
+  "scope": "/",
+  "lang": "en",
   "display": "standalone",
   "background_color": "#070709",
   "theme_color": "#d8ff52",
@@ -10,7 +13,8 @@
     {
       "src": "/icon.svg",
       "sizes": "any",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ]
 }

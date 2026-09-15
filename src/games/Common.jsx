@@ -16,6 +16,7 @@ export function GameFrame({ game, children, onReset, onStart, score = 0, step = 
   const { markPlayed, progress } = useProgress();
   const [started,setStarted] = useState(false);
   const previousBest = useRef(Number(progress.bestScores[game.id] || 0)).current;
+  const relatedGames = games.filter(item => isPlayable(item.id) && item.category === game.category && item.id !== game.id).slice(0,2);
 
   return <GameSessionContext.Provider value={{game,previousBest}}>
     <div className="game-screen" style={{ "--game-accent": game.accent }}>
@@ -25,7 +26,7 @@ export function GameFrame({ game, children, onReset, onStart, score = 0, step = 
         <div className="game-identity"><span>{game.category}</span><strong>{game.title}</strong></div>
         <div className="game-stats"><span aria-live="polite"><Trophy size={15} />{score} XP</span><b>{step}</b>{onReset && <button className="round-button" onClick={onReset} aria-label="Restart game">↻</button>}</div>
       </div>
-      <main className="game-stage">
+      <main id="main-content" tabIndex="-1" className="game-stage">
         {!started ? <section className="game-intro">
           <div className="intro-visual"><GameArtwork game={game} compact /><div><span>{game.category}</span><b>{game.level}</b><small>{game.ages}</small></div></div>
           <div className="intro-content"><div className="intro-eyebrow"><div className="intro-icon"><Goal /></div><span className="panel-label">{game.duration} • {game.players}</span></div>
@@ -34,6 +35,7 @@ export function GameFrame({ game, children, onReset, onStart, score = 0, step = 
             <aside><Lightbulb /><span><b>Good to know</b>{game.tip}</span></aside>
             {previousBest > 0 && <div className="personal-best"><Trophy /> Personal best: {previousBest} XP</div>}
             <button className="cta intro-start" onClick={() => { markPlayed(game.id); onStart?.(); setStarted(true); }}>Start game <ChevronRight /></button>
+            {relatedGames.length > 0 && <nav className="intro-related" aria-label="Related games"><span>Also in {game.category}</span>{relatedGames.map(item => <Link key={item.id} to={"/play/"+item.id}>{item.title}<ChevronRight /></Link>)}</nav>}
           </div>
         </section> : children}
       </main>
@@ -45,6 +47,7 @@ export function Completion({ title = "Beautifully played.", text, xp = 120, onAg
   const session = useContext(GameSessionContext);
   const {markCompleted,recordScore,markDailyCompleted,progress} = useProgress();
   const committed = useRef(false);
+  const resultRef = useRef(null);
   const game = session?.game;
   const previousBest = session?.previousBest || 0;
   const score = Math.max(0,Math.round(Number(xp) || 0));
@@ -60,11 +63,12 @@ export function Completion({ title = "Beautifully played.", text, xp = 120, onAg
     recordScore(game.id,score);
     if (game.id === dailyId && score > 0) markDailyCompleted(date,game.id,score);
   },[dailyId,date,game,markCompleted,markDailyCompleted,recordScore,score]);
+  useEffect(() => { resultRef.current?.focus({preventScroll:true}); },[]);
 
   const related = game ? games.filter(item => isPlayable(item.id) && item.category === game.category && item.id !== game.id).map(withDetails) : [];
   const next = related[(progress.completed[game?.id] || 0) % Math.max(1,related.length)];
 
-  return <div className="completion">
+  return <div ref={resultRef} tabIndex="-1" className="completion">
     <div className="completion-mark"><Trophy /></div><span>SESSION COMPLETE</span>
     <h2>{title}</h2><p>{text}</p>
     <div className="result-summary">

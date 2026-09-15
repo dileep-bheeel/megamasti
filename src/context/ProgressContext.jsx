@@ -7,6 +7,12 @@ const defaults = {
   preferences: { largeText: false, highContrast: false, reducedMotion: false, sound: true }
 };
 const ProgressContext = createContext(null);
+const achievementNames = new Set(["First Move","Curious Mind","World Hopper","Four Figures"]);
+
+function numericRecord(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return Object.fromEntries(Object.entries(value).filter(([key,number]) => key && Number.isFinite(Number(number)) && Number(number) >= 0).map(([key,number]) => [key,Math.round(Number(number))]));
+}
 
 function restore() {
   try {
@@ -15,12 +21,12 @@ function restore() {
     return {
       recent: Array.isArray(parsed.recent) ? parsed.recent.slice(0,6) : [],
       favorites: Array.isArray(parsed.favorites) ? parsed.favorites : [],
-      bestScores: parsed.bestScores && typeof parsed.bestScores === "object" ? parsed.bestScores : {},
-      completed: parsed.completed && typeof parsed.completed === "object" ? parsed.completed : {},
-      totalXp: Number.isFinite(parsed.totalXp) ? parsed.totalXp : 0,
-      achievements: Array.isArray(parsed.achievements) ? parsed.achievements : [],
-      daily: parsed.daily && typeof parsed.daily === "object" ? parsed.daily : null,
-      preferences: {...defaults.preferences,...(parsed.preferences || {})}
+      bestScores: numericRecord(parsed.bestScores),
+      completed: numericRecord(parsed.completed),
+      totalXp: Number.isFinite(Number(parsed.totalXp)) ? Math.max(0,Math.round(Number(parsed.totalXp))) : 0,
+      achievements: Array.isArray(parsed.achievements) ? parsed.achievements.filter(item => achievementNames.has(item)) : [],
+      daily: parsed.daily && typeof parsed.daily === "object" && typeof parsed.daily.date === "string" && typeof parsed.daily.gameId === "string" ? {...parsed.daily,score:Math.max(0,Math.round(Number(parsed.daily.score)||0)),completed:Boolean(parsed.daily.completed)} : null,
+      preferences: Object.fromEntries(Object.keys(defaults.preferences).map(key => [key,typeof parsed.preferences?.[key] === "boolean" ? parsed.preferences[key] : defaults.preferences[key]]))
     };
   } catch {
     return defaults;
