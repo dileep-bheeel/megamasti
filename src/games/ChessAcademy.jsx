@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Chess } from "chess.js";
 import { Sparkles } from "lucide-react";
 import { chessLessons } from "../data/content";
-import { Completion, GameFrame, sample } from "./Common";
+import { Completion, GameFrame } from "./Common";
 
 const symbols = { p: "♟", r: "♜", n: "♞", b: "♝", q: "♛", k: "♚" };
 
