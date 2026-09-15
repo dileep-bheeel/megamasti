@@ -70,7 +70,7 @@ function Home() {
   const navigate = useNavigate();
   const {progress} = useProgress();
   const daily = useDailyGame();
-  const dailyComplete = progress.daily?.date === getUtcDateKey() && progress.daily?.gameId === daily.id && progress.daily?.completed;
+  const dailyComplete = progress.daily?.date === getUtcDateKey() && progress.daily?.gameId === daily.id && progress.daily?.completed && Number(progress.daily?.score || 0) > 0;
   const featured = featuredIds.map(id => playableGames.find(game => game.id === id)).filter(Boolean);
   const recent = progress.recent.map(id => playableGames.find(game => game.id === id)).filter(Boolean);
   const quickPlay = () => {
