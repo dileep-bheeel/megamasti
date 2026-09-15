@@ -48,7 +48,7 @@ export default function KnowledgeGame({ game, bankKey }) {
       <h1>{question.q}</h1>
       <div className="answer-grid">
         {question.options.map((option,optionIndex)=>
-          <button key={option} onClick={()=>answer(optionIndex)} disabled={selected!==null} className={selected===null?"":optionIndex===question.answer?"correct":optionIndex===selected?"wrong":"dim"}>
+          <button key={option} autoFocus={optionIndex===0} onClick={()=>answer(optionIndex)} disabled={selected!==null} className={selected===null?"":optionIndex===question.answer?"correct":optionIndex===selected?"wrong":"dim"}>
             <span>{String.fromCharCode(65+optionIndex)}</span>{option}
             {selected!==null&&optionIndex===question.answer&&<Check/>}
           </button>

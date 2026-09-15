@@ -58,7 +58,7 @@ export function Completion({ title = "Beautifully played.", text, xp = 120, onAg
     committed.current = true;
     markCompleted(game.id,score);
     recordScore(game.id,score);
-    if (game.id === dailyId) markDailyCompleted(date,game.id,score);
+    if (game.id === dailyId && score > 0) markDailyCompleted(date,game.id,score);
   },[dailyId,date,game,markCompleted,markDailyCompleted,recordScore,score]);
 
   const related = game ? games.filter(item => isPlayable(item.id) && item.category === game.category && item.id !== game.id).map(withDetails) : [];
