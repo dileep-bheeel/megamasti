@@ -14,7 +14,7 @@ export function CreativeStudio({ game, type }) {
   if(type==="story"){
     const source=prompts.story;
     title="Forge an original world.";
-    brief="Your protagonist is "+source.characters[round%source.characters.length]+" in "+source.worlds[(round+1)%source.worlds.length]+". They "+source.conflicts[(round+2)%source.conflicts.length]+". Twist: "+source.twists[(round+3)%source.twists.length]+".";
+    brief="Your protagonist is "+source.characters[round%source.characters.length]+" in "+source.worlds[(round+1)%source.worlds.length]+". The protagonist "+source.conflicts[(round+2)%source.conflicts.length]+". Twist: "+source.twists[(round+3)%source.twists.length]+".";
     minimum=140;
   }
   if(type==="debate"){
