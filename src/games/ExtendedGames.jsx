@@ -45,7 +45,11 @@ export function ReversiArena({game}) {
       const options=legalReversi(board,"W");
       const corners=[0,7,56,63];
       const choice=[...options].sort((a,b)=>(corners.includes(b)?100:0)+flipsFor(board,b,"W").length-(corners.includes(a)?100:0)-flipsFor(board,a,"W").length)[0];
-      if(choice!==undefined)place(choice,"W");
+      if(choice!==undefined){
+        const flips=flipsFor(board,choice,"W");
+        const next=[...board];next[choice]="W";flips.forEach(index=>next[index]="W");
+        setBoard(next);setMoves(value=>value+1);setTurn("B");
+      }
       setMessage("Your move. Look for corners, edges and forced replies.");
     },420);
     return()=>clearTimeout(timer);
@@ -113,7 +117,6 @@ export function WordArchitect({game}){
   return <GameFrame game={game} score={score} step={seconds+"s"} onReset={reset}><section className="word-stage"><span className="panel-label">VOCABULARY CONSTRUCTION</span><h1>Build beyond the obvious.</h1><div className="letter-rack">{data.letters.split("").map((letter,index)=><span key={index}>{letter}<small>{index+1}</small></span>)}</div><form onSubmit={event=>{event.preventDefault();submit();}}><input value={entry} onChange={event=>setEntry(event.target.value.replace(/[^a-z]/gi,""))} placeholder="Type a word…" autoComplete="off" aria-label="Word"/><button className="cta">Add word</button></form><p className="word-message" aria-live="polite">{message}</p><div className="found-words">{found.length?found.map(word=><span key={word}>{word}<b>+{word.length*word.length*3}</b></span>):<i>Your valid words will appear here.</i>}</div><button className="text-action" onClick={()=>setSeconds(0)}>Finish round</button></section></GameFrame>;
 }
 
-const kakuroSolution=[[1,4,8],[3,9,2],[6,7,5]];
 const rowSums=[13,14,18],columnSums=[10,20,15];
 export function KakuroVault({game}){
   const [values,setValues]=useState(Array(9).fill(0)),[selected,setSelected]=useState(0),[checks,setChecks]=useState(0),[message,setMessage]=useState("Fill each run with unique digits that match its sum.");
