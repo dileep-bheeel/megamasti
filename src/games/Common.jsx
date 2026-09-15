@@ -12,7 +12,7 @@ export const shuffle = list => [...list].sort(() => Math.random() - 0.5);
 
 const GameSessionContext = createContext(null);
 
-export function GameFrame({ game, children, onReset, score = 0, step = "LIVE" }) {
+export function GameFrame({ game, children, onReset, onStart, score = 0, step = "LIVE" }) {
   const { markPlayed, progress } = useProgress();
   const [started,setStarted] = useState(false);
   const previousBest = useRef(Number(progress.bestScores[game.id] || 0)).current;
@@ -33,7 +33,7 @@ export function GameFrame({ game, children, onReset, score = 0, step = "LIVE" })
             <dl><div><dt>Goal</dt><dd>{game.goal}</dd></div><div><dt>Controls</dt><dd>{game.controls}</dd></div><div><dt>Scoring</dt><dd>{game.scoring}</dd></div></dl>
             <aside><Lightbulb /><span><b>Good to know</b>{game.tip}</span></aside>
             {previousBest > 0 && <div className="personal-best"><Trophy /> Personal best: {previousBest} XP</div>}
-            <button className="cta intro-start" onClick={() => { markPlayed(game.id); setStarted(true); }}>Start game <ChevronRight /></button>
+            <button className="cta intro-start" onClick={() => { markPlayed(game.id); onStart?.(); setStarted(true); }}>Start game <ChevronRight /></button>
           </div>
         </section> : children}
       </main>
