@@ -100,11 +100,11 @@ const canBuild=(word,letters)=>{const pool=letters.toLowerCase().split("");retur
 
 export function WordArchitect({game}){
   const [round,setRound]=useState(()=>Math.floor(Math.random()*wordRounds.length));
-  const [entry,setEntry]=useState(""),[found,setFound]=useState([]),[seconds,setSeconds]=useState(90),[message,setMessage]=useState("Build words of three letters or more.");
+  const [entry,setEntry]=useState(""),[found,setFound]=useState([]),[seconds,setSeconds]=useState(90),[message,setMessage]=useState("Build words of three letters or more."),[active,setActive]=useState(false);
   const data=wordRounds[round%wordRounds.length];
   const score=found.reduce((sum,word)=>sum+word.length*word.length*3,0);
-  useEffect(()=>{if(seconds<=0)return;const timer=setTimeout(()=>setSeconds(v=>v-1),1000);return()=>clearTimeout(timer);},[seconds]);
-  const reset=()=>{setRound(value=>(value+1)%wordRounds.length);setEntry("");setFound([]);setSeconds(90);setMessage("A fresh letter set is ready.");};
+  useEffect(()=>{if(!active||seconds<=0)return;const timer=setTimeout(()=>setSeconds(v=>v-1),1000);return()=>clearTimeout(timer);},[active,seconds]);
+  const reset=()=>{setRound(value=>(value+1)%wordRounds.length);setEntry("");setFound([]);setSeconds(90);setMessage("A fresh letter set is ready.");setActive(true);};
   const submit=()=>{
     const word=entry.trim().toLowerCase();setEntry("");
     if(word.length<3){setMessage("Use at least three letters.");return;}
@@ -114,7 +114,7 @@ export function WordArchitect({game}){
     setFound(list=>[...list,word]);setMessage(word.length>=6?"Excellent structure—long words earn a strong bonus.":"Valid word. Keep combining.");
   };
   if(seconds===0)return <GameFrame game={game} score={score} onReset={reset}><Completion title="Blueprint complete." text={"You found "+found.length+" of "+data.words.length+" curated words."} xp={score} detail={{value:found.length+"/"+data.words.length,label:"words discovered"}} onAgain={reset}/></GameFrame>;
-  return <GameFrame game={game} score={score} step={seconds+"s"} onReset={reset}><section className="word-stage"><span className="panel-label">VOCABULARY CONSTRUCTION</span><h1>Build beyond the obvious.</h1><div className="letter-rack">{data.letters.split("").map((letter,index)=><span key={index}>{letter}<small>{index+1}</small></span>)}</div><form onSubmit={event=>{event.preventDefault();submit();}}><input value={entry} onChange={event=>setEntry(event.target.value.replace(/[^a-z]/gi,""))} placeholder="Type a word…" autoComplete="off" aria-label="Word"/><button className="cta">Add word</button></form><p className="word-message" aria-live="polite">{message}</p><div className="found-words">{found.length?found.map(word=><span key={word}>{word}<b>+{word.length*word.length*3}</b></span>):<i>Your valid words will appear here.</i>}</div><button className="text-action" onClick={()=>setSeconds(0)}>Finish round</button></section></GameFrame>;
+  return <GameFrame game={game} score={score} step={seconds+"s"} onReset={reset} onStart={()=>setActive(true)}><section className="word-stage"><span className="panel-label">VOCABULARY CONSTRUCTION</span><h1>Build beyond the obvious.</h1><div className="letter-rack">{data.letters.split("").map((letter,index)=><span key={index}>{letter}<small>{index+1}</small></span>)}</div><form onSubmit={event=>{event.preventDefault();submit();}}><input value={entry} onChange={event=>setEntry(event.target.value.replace(/[^a-z]/gi,""))} placeholder="Type a word…" autoComplete="off" aria-label="Word"/><button className="cta">Add word</button></form><p className="word-message" aria-live="polite">{message}</p><div className="found-words">{found.length?found.map(word=><span key={word}>{word}<b>+{word.length*word.length*3}</b></span>):<i>Your valid words will appear here.</i>}</div><button className="text-action" onClick={()=>setSeconds(0)}>Finish round</button></section></GameFrame>;
 }
 
 const rowSums=[13,14,18],columnSums=[10,20,15];
