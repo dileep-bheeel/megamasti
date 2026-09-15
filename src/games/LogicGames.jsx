@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Brain, Check, Lightbulb } from "lucide-react";
+import { Brain, Lightbulb } from "lucide-react";
 import { prompts } from "../data/content";
 import { Completion, GameFrame, shuffle } from "./Common";
 
