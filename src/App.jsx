@@ -6,6 +6,7 @@ import { isPlayable, withDetails } from "./data/gameDetails";
 import { useProgress } from "./context/ProgressContext";
 import usePageMeta from "./hooks/usePageMeta";
 import GameArtwork from "./components/GameArtwork";
+import { getDailyGame, getUtcDateKey } from "./utils/daily";
 
 const GameEngine = lazy(() => import("./games/GameEngine"));
 const playableGames = games.filter(game => isPlayable(game.id)).map(withDetails);
@@ -44,11 +45,7 @@ function GameCard({ game, featured = false, label }) {
 }
 
 function useDailyGame() {
-  return useMemo(() => {
-    const date = new Date();
-    const key = Number(String(date.getUTCFullYear()) + String(date.getUTCMonth() + 1).padStart(2,"0") + String(date.getUTCDate()).padStart(2,"0"));
-    return playableGames[key % playableGames.length];
-  },[]);
+  return useMemo(() => getDailyGame(playableGames),[]);
 }
 
 const categoryWorlds = [
@@ -73,6 +70,7 @@ function Home() {
   const navigate = useNavigate();
   const {progress} = useProgress();
   const daily = useDailyGame();
+  const dailyComplete = progress.daily?.date === getUtcDateKey() && progress.daily?.gameId === daily.id && progress.daily?.completed;
   const featured = featuredIds.map(id => playableGames.find(game => game.id === id)).filter(Boolean);
   const recent = progress.recent.map(id => playableGames.find(game => game.id === id)).filter(Boolean);
   const quickPlay = () => {
@@ -104,7 +102,9 @@ function Home() {
 
     {recent.length > 0 && <section className="continue-section"><div className="section-heading"><div><span>PICK UP WHERE YOU LEFT OFF</span><h2>Continue playing.</h2></div></div><div className="compact-game-row">{recent.slice(0,4).map(game => <GameCard game={game} key={game.id} />)}</div></section>}
 
-    <section className="daily-section" id="daily"><div><span>DAILY PICK</span><h2>One thoughtful game.<br />A fresh pick every day.</h2><p>Today’s selection is determined by the date—no fake popularity or pressure.</p></div><GameCard game={daily} featured label="TODAY’S EDITORIAL PICK" /></section>
+    {progress.totalXp > 0 && <section className="progress-shelf"><div><span>YOUR PLAY JOURNEY</span><h2>{progress.totalXp.toLocaleString()} XP</h2><p>{Object.keys(progress.completed).length} games explored • {Object.values(progress.completed).reduce((sum,value)=>sum+value,0)} sessions completed</p></div><div className="achievement-row">{progress.achievements.length ? progress.achievements.map(item=><span key={item}><Trophy/>{item}</span>) : <p>Your first achievement appears after a completed session.</p>}</div></section>}
+
+    <section className={"daily-section "+(dailyComplete?"daily-complete":"")} id="daily"><div><span>{dailyComplete?"DAILY PICK COMPLETE":"DAILY PICK"}</span><h2>{dailyComplete?"Today’s challenge is in the books.":"One thoughtful game. A fresh pick every day."}</h2><p>{dailyComplete?"You scored "+progress.daily.score+" XP. Replay for mastery or explore another world.":"The same date-based selection appears for every visitor. Complete it to save today’s score."}</p></div><GameCard game={daily} featured label={dailyComplete?"COMPLETED TODAY":"TODAY’S CHALLENGE"} /></section>
 
     <section className="featured-section" id="featured"><div className="section-heading"><div><span>CURATED STARTING POINTS</span><h2>Strong places to begin.</h2></div><Link to="/games">View playable games <ArrowRight /></Link></div>
       <div className="featured-grid">{featured.map((game,index) => <div className={"feature-wrap f" + index} key={game.id}><GameCard game={game} featured /></div>)}</div>
