@@ -84,7 +84,7 @@ function Home() {
       <div className="hero-grid" />
       <div className="hero-copy"><div className="edition"><Sparkles size={15} /> Games for curious minds, ages 6–80+</div>
         <h1>A world of play.<br /><em>Made for every mind.</em></h1>
-        <p>Strategy, stories, puzzles, knowledge and group fun—twenty thoughtful games, ready whenever you are.</p>
+        <p>Strategy, stories, puzzles, knowledge and group fun—{playableGames.length} thoughtful games, ready whenever you are.</p>
         <div className="hero-actions"><button onClick={quickPlay} className="mega-cta">Start playing <Zap /></button><Link to="/games">Explore the collection <ArrowRight /></Link></div>
         <div className="trust-row"><span><b>{playableGames.length}</b> games ready now</span><span><b>5</b> distinct worlds</span><span><b>0</b> sign-up steps</span></div>
       </div>
