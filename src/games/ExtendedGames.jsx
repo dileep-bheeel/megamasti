@@ -85,14 +85,14 @@ export function NonogramStudio({game}){
 }
 
 const wordRounds=[
-  {letters:"CREATIVE",words:["active","cater","cave","cite","crave","create","race","rate","react","rice","tier","tire","trace"]},
+  {letters:"CREATIVE",words:["active","cater","cave","cite","crave","create","creative","race","rate","react","rice","tier","tire","trace"]},
   {letters:"PLANETS",words:["least","panel","pants","plant","planet","planets","plate","seat","slate","stale","steal"]},
   {letters:"BRAINY",words:["airy","barn","binary","brain","brainy","bray","rain","rainy"]},
   {letters:"MARKETS",words:["maker","market","markets","rate","smart","stake","stark","steam","task","team"]},
   {letters:"JOURNEY",words:["enjoy","jury","journey","rune","your","yore"]},
   {letters:"FAMILY",words:["aim","fail","family","film","lay","mail","may"]},
   {letters:"ORCHARD",words:["arch","card","char","chord","hard","hoard","orchard","road"]},
-  {letters:"BRIGHTEN",words:["begin","bright","eight","height","night","right","their","thing"]},
+  {letters:"BRIGHTEN",words:["begin","bright","brighten","eight","night","right","their","thing"]},
   {letters:"CAPTURE",words:["acute","cape","capture","carpet","crate","pace","pure","react","trace"]},
   {letters:"WONDER",words:["down","drew","owner","redo","rowed","wonder","word","worn"]}
 ];
