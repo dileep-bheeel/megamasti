@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
-import { Check, Lightbulb, RotateCw, Sparkles } from "lucide-react";
-import { Completion, GameFrame, sample } from "./Common";
+import { useEffect, useState } from "react";
+import { Check, Lightbulb, RotateCw } from "lucide-react";
+import { Completion, GameFrame } from "./Common";
 
 const directions = [[-1,0],[0,1],[1,0],[0,-1]];
 const opponent = player => player === "B" ? "W" : "B";
@@ -117,10 +117,10 @@ const kakuroSolution=[[1,4,8],[3,9,2],[6,7,5]];
 const rowSums=[13,14,18],columnSums=[10,20,15];
 export function KakuroVault({game}){
   const [values,setValues]=useState(Array(9).fill(0)),[selected,setSelected]=useState(0),[checks,setChecks]=useState(0),[message,setMessage]=useState("Fill each run with unique digits that match its sum.");
-  const groupsValid=lines=>lines.every((line,i)=>line.reduce((a,b)=>a+b,0)===(lines===kakuroSolution?rowSums[i]:columnSums[i])&&new Set(line).size===3);
+  const groupsValid=(lines,sums)=>lines.every((line,i)=>line.reduce((a,b)=>a+b,0)===sums[i]&&new Set(line).size===3);
   const rows=Array.from({length:3},(_,r)=>values.slice(r*3,r*3+3));
   const columns=Array.from({length:3},(_,c)=>[values[c],values[c+3],values[c+6]]);
-  const won=values.every(Boolean)&&groupsValid(rows)&&groupsValid(columns);
+  const won=values.every(Boolean)&&groupsValid(rows,rowSums)&&groupsValid(columns,columnSums);
   const reset=()=>{setValues(Array(9).fill(0));setSelected(0);setChecks(0);setMessage("The vault has reset.");};
   const inspect=()=>{setChecks(v=>v+1);setMessage(won?"Every sum aligns.":"At least one run has the wrong sum or repeats a digit.");};
   if(won)return <GameFrame game={game} score={Math.max(100,240-checks*20)} onReset={reset}><Completion title="Vault unlocked." text="Every crossing run balances without repeating a digit." xp={Math.max(100,240-checks*20)} detail={{value:checks||"0",label:"checks used"}} onAgain={reset}/></GameFrame>;
