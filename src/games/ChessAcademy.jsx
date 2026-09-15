@@ -15,6 +15,7 @@ export default function ChessAcademy({ game }) {
   const [message,setMessage] = useState("White to move. Select a piece.");
   const [xp,setXp] = useState(0);
   const [thinking,setThinking] = useState(false);
+  const [promotion,setPromotion] = useState("q");
   const chess = chessRef.current;
   const board = chess.board();
 
@@ -38,16 +39,25 @@ export default function ChessAcademy({ game }) {
       return;
     }
     try {
-      const move = chess.move({from:selected,to:square,promotion:"q"});
+      const move = chess.move({from:selected,to:square,promotion});
       if (!move) return;
       setXp(value => value + 15); setMessage(move.san + " — checking the reply."); setSelected(null); setVersion(value => value + 1);
       if (!chess.isGameOver()) {
         setThinking(true);
         replyTimer.current = setTimeout(() => {
           const current = chessRef.current;
-          if (!current.isGameOver()) current.move(sample(current.moves()));
+          if (!current.isGameOver()) {
+            const candidates=current.moves({verbose:true}).map(candidate=>{
+              const value={p:1,n:3,b:3,r:5,q:9,k:0}[candidate.captured]||0;
+              const centre=["d4","e4","d5","e5"].includes(candidate.to)?0.6:0;
+              const forcing=/[+#]/.test(candidate.san)?1.2:0;
+              return {candidate,score:value+centre+forcing+Math.random()*.25};
+            });
+            candidates.sort((a,b)=>b.score-a.score);
+            if(candidates[0])current.move(candidates[0].candidate);
+          }
           setThinking(false); setVersion(value => value + 1);
-          setMessage(current.inCheck() ? "Your king is in check. Find a legal defence." : "Your turn. Scan checks, captures, then threats.");
+          setMessage(current.isGameOver() ? "The match is complete." : current.inCheck() ? "Your king is in check. Find a legal defence." : "Your turn. Scan checks, captures, then threats.");
         },420);
       }
     } catch {
@@ -57,6 +67,9 @@ export default function ChessAcademy({ game }) {
   };
 
   const legal = selected ? chess.moves({square:selected,verbose:true}).map(move => move.to) : [];
+  const history=chess.history({verbose:true});
+  const capturedWhite=history.filter(move=>move.color==="b"&&move.captured).map(move=>symbols[move.captured]);
+  const capturedBlack=history.filter(move=>move.color==="w"&&move.captured).map(move=>symbols[move.captured]);
   const result = chess.isCheckmate() ? (chess.turn() === "b" ? "You delivered checkmate." : "The coach delivered checkmate.") : chess.isDraw() ? "The position is drawn." : null;
 
   return <GameFrame game={game} score={xp} step={thinking ? "COACH THINKING" : "ACADEMY"} onReset={reset}>
@@ -74,9 +87,14 @@ export default function ChessAcademy({ game }) {
             </button>;
           }))}
         </div>
+        <div className="captured-row"><span aria-label="Black pieces captured">{capturedBlack.join(" ") || "No captures"}</span><span aria-label="White pieces captured">{capturedWhite.join(" ") || "No captures"}</span></div>
         <div className="coach-message" aria-live="polite"><Sparkles /><span>{message}</span></div>
       </section>
-      <aside className="lesson-panel"><span className="panel-label">MICRO LESSON {lesson + 1}/{chessLessons.length}</span><h2>{chessLessons[lesson].title}</h2><p>{chessLessons[lesson].body}</p><button onClick={() => setLesson(value => (value + 1) % chessLessons.length)}>Next principle →</button><div className="analysis-list"><div><i />Development</div><div><i />King safety</div><div><i />Centre control</div></div></aside>
+      <aside className="lesson-panel"><span className="panel-label">LEARNING PATH {lesson + 1}/{chessLessons.length}</span><h2>{chessLessons[lesson].title}</h2><p>{chessLessons[lesson].body}</p><button onClick={() => setLesson(value => (value + 1) % chessLessons.length)}>Next lesson →</button>
+        <label className="promotion-choice">Pawn promotion<select value={promotion} onChange={event=>setPromotion(event.target.value)}><option value="q">Queen</option><option value="r">Rook</option><option value="b">Bishop</option><option value="n">Knight</option></select></label>
+        <div className="move-history"><strong>Moves</strong><p>{history.length?history.slice(-10).map(move=>move.san).join("  "):"Your move history will appear here."}</p></div>
+        <div className="analysis-list"><div><i />Legal move validation</div><div><i />Check and checkmate</div><div><i />Castling and en passant</div></div>
+      </aside>
     </div>}
   </GameFrame>;
 }
