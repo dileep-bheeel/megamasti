@@ -2,11 +2,17 @@ import ChessAcademy from "./ChessAcademy";
 import KnowledgeGame from "./KnowledgeGame";
 import { Detective, Mastermind, Sudoku } from "./LogicGames";
 import { CreativeStudio, RhythmLab, SocialRound } from "./CreativeSocialGames";
+import { CircuitArchitect, KakuroVault, NonogramStudio, ReversiArena, WordArchitect } from "./ExtendedGames";
 
 export default function GameEngine({ game }) {
   const key = game.engine;
   if (key === "chess") return <ChessAcademy game={game} />;
   if (key === "mastermind") return <Mastermind game={game} />;
+  if (key === "reversi") return <ReversiArena game={game} />;
+  if (key === "nonogram") return <NonogramStudio game={game} />;
+  if (key === "kakuro") return <KakuroVault game={game} />;
+  if (key === "circuit") return <CircuitArchitect game={game} />;
+  if (key === "words") return <WordArchitect game={game} />;
   if (key === "sudoku") return <Sudoku game={game} />;
   if (key === "detective") return <Detective game={game} />;
   if (["story","debate","caption","invent","mystery"].includes(key)) return <CreativeStudio game={game} type={key} />;
